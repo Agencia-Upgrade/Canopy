@@ -6,7 +6,6 @@ name: canopy
 services:
 
   nginx:
-    platform: linux/amd64
     image: nginx:alpine
     ports:
       - "80:80"
@@ -19,7 +18,6 @@ services:
       - canopy
 
   php:
-    platform: linux/amd64
     build:
       context: .
       dockerfile: .docker/php/Dockerfile
@@ -34,7 +32,6 @@ services:
         condition: service_healthy
 
   db:
-    platform: linux/amd64
     image: mariadb:11
     ports:
       - "3306:3306"
@@ -54,13 +51,11 @@ services:
       retries: 10
 
   redis:
-    platform: linux/amd64
     image: redis:alpine
     networks:
       - canopy
 
   mailpit:
-    platform: linux/amd64
     image: axllent/mailpit
     ports:
       - "8025:8025"
