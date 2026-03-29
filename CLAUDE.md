@@ -14,7 +14,7 @@ Canopy is a production-ready WordPress boilerplate that combines Bedrock's infra
 - Timber/Twig for template separation (not Sage/Blade)
 - No build step for assets (CSS/JS committed directly)
 - Laravel Pint for PSR-12 formatting (not PHPCS)
-- Redis for caching (with LiteSpeed as alternative)
+- LiteSpeed Cache for production caching
 - GitHub Actions for deployment and auto-updates
 
 ---
@@ -24,12 +24,12 @@ Canopy is a production-ready WordPress boilerplate that combines Bedrock's infra
 | Component | Version | Notes |
 |---|---|---|
 | **WordPress** | ^6.9 | Follows minor/patch, blocks MAJOR via Actions |
-| **PHP** | >=8.5 | PSR-4 namespacing, modern OOP patterns |
+| **PHP** | >=8.5 | PSR-4 namespacing, modern OOP patterns. Opcache is built into core. |
 | **Bedrock** | Latest | Git-first, Composer-managed, `.env` per environment |
 | **Timber** | ^2.1 | Installed in Bedrock root, available to any theme |
 | **Twig** | 3.x | Via Timber, clean separation of PHP/HTML |
 | **Laravel Pint** | ^1.0 | PSR-12 code formatting, `composer lint:fix` |
-| **Redis** | Any | redis-cache plugin, optional—LiteSpeed alternative |
+| **LiteSpeed Cache** | Latest | Production cache plugin via Composer |
 | **PHP-BCrypt** | ^1.1 | Secure password hashing via `roots/wp-password-bcrypt` |
 
 ---
@@ -38,39 +38,112 @@ Canopy is a production-ready WordPress boilerplate that combines Bedrock's infra
 
 ### 1. Create a new project from Canopy
 
+**Automated (recommended):**
+
+```bash
+git clone https://github.com/Agencia-Upgrade/canopy.git my-project
+cd my-project
+bash start.sh
+```
+
+The script renames the theme, replaces namespaces/CSS prefixes, generates `.env`, and resets Git history. Choose **Local (Docker)** for development.
+
+**Manual:**
+
 ```bash
 git clone https://github.com/Agencia-Upgrade/canopy.git my-project
 cd my-project
 cp .env.example .env
-# Edit .env with your database and site URLs
-composer install
-wp core install --url=http://localhost --title="My Site" --admin_user=admin --admin_password=password --admin_email=admin@example.com --allow-root
-wp theme activate canopy --allow-root
+# Edit .env with your database credentials and site URL
 ```
 
 ### 2. Local development (Docker)
 
 ```bash
-# Start
+# First time: build containers and install
+make rebuild
+make composer install
+
+# Install WordPress
+docker compose exec php wp --allow-root core install \
+  --url=http://localhost \
+  --title="My Site" \
+  --admin_user=admin \
+  --admin_password=password \
+  --admin_email=admin@example.com
+
+# Activate theme
+docker compose exec php wp --allow-root theme activate canopy
+
+# Start/stop (after initial setup)
 make up
-
-# Run commands inside PHP container
-make composer require wp-plugin/plugin-name
-make wp plugin list
-make bash
-
-# Logs
-make logs
-
-# Stop
 make down
 ```
 
-### 3. Deploy
+**Default Docker credentials** (in `docker-compose.yml`):
+- DB: `canopy_local` / user: `dev` / password: `dev` / host: `db`
+- `.env` must match these values (or update both)
+
+### 3. WP-CLI with Docker
+
+```bash
+# Simple commands via make
+make wp plugin list
+make wp core version
+
+# Commands with flags — use docker compose exec directly
+docker compose exec php wp --allow-root core install \
+  --url=http://localhost --title="My Site" \
+  --admin_user=admin --admin_password=password \
+  --admin_email=admin@example.com
+
+# Or pass flags via ARGS variable
+make wp core install ARGS="--url=http://localhost --title='My Site'"
+
+# Shell access for multiple commands
+make bash
+```
+
+> **Why not just `make wp`?** Make interprets `--flags` as its own options. For WP-CLI commands with flags, use `docker compose exec` directly or the `ARGS=` pattern.
+
+### 4. Deploy
 
 GitHub Actions workflows handle deployment:
 - **deploy-production.yml** → Pushes to main branch trigger SSH deployment, `composer install`, cache flushes
 - **auto-update.yml** → Weekly (Monday 07:00 UTC) `composer update`, commit to main, auto-deploy if `composer.lock` changed
+
+### 5. Without Docker (server/hosting)
+
+```bash
+composer install
+cp .env.example .env
+# Edit .env with your database and site URL
+wp core install --url=https://example.com --title="My Site" \
+  --admin_user=admin --admin_password=password \
+  --admin_email=admin@example.com --allow-root
+wp theme activate canopy --allow-root
+```
+
+---
+
+## Boot Flow
+
+Understanding the boot sequence is critical for debugging:
+
+```
+Browser → nginx → web/index.php
+  → require web/wp/wp-blog-header.php
+    → require web/wp-config.php
+      1. require vendor/autoload.php    (Composer: loads Env, Timber, etc.)
+      2. require config/application.php  (.env loading, WP constants, ABSPATH)
+      3. require wp-settings.php         (WordPress core boot)
+```
+
+**Key files:**
+
+- **`web/index.php`** — Minimal: defines `WP_USE_THEMES` and loads `wp-blog-header.php`. Does NOT load autoload or config directly.
+- **`web/wp-config.php`** — Three `require_once` lines: autoload → application → wp-settings. WP-CLI requires the literal `wp-settings.php` string to be present.
+- **`config/application.php`** — Loads `.env` via phpdotenv, defines all WP constants via `Roots\WPConfig\Config`, sets `ABSPATH`.
 
 ---
 
@@ -82,21 +155,31 @@ canopy/
 ├── .env                      ← Actual config (NOT versioned)
 ├── composer.json             ← Root Bedrock dependencies + PSR-4 autoload
 ├── pint.json                 ← Laravel Pint PSR-12 config
-├── wp-cli.yml                ← WP-CLI configuration
-├── Makefile                  ← Docker/local dev shortcuts
+├── wp-cli.yml                ← WP-CLI configuration (path, docroot)
+├── Makefile                  ← Docker shortcuts (make up/down/wp/bash/rebuild)
+├── start.sh                  ← Project scaffolding (rename theme, generate .env)
 ├── CLAUDE.md                 ← This file
 ├── README.md                 ← Public documentation
 │
+├── .docker/                  ← Docker configuration
+│   ├── php/
+│   │   ├── Dockerfile        ← PHP 8.5-fpm-bookworm + extensions + WP-CLI
+│   │   └── php.ini           ← PHP overrides
+│   └── nginx/
+│       └── default.conf      ← Nginx vhost config
+│
+├── docker-compose.yml        ← Local stack: nginx, php, mariadb, redis, mailpit
+│
 ├── config/                   ← WordPress configuration (Roots/WPConfig)
-│   ├── application.php       ← Base config, loads environment overrides
+│   ├── application.php       ← Base config, loads .env, defines constants
 │   └── environments/
 │       ├── development.php   ← Dev: debug on, cache off
 │       ├── staging.php       ← Staging: cache on, no indexing
 │       └── production.php    ← Prod: LiteSpeed cache, auto-purge
 │
-├── web/                      ← Web root (everything below is served)
-│   ├── index.php             ← Entry point (loads config/application.php)
-│   ├── wp-config.php         ← WP config loader (minimal)
+├── web/                      ← Web root (document root for nginx)
+│   ├── index.php             ← Entry point → wp-blog-header.php
+│   ├── wp-config.php         ← Autoload → application.php → wp-settings.php
 │   ├── wp/                   ← WordPress core (Composer-managed, .gitignored)
 │   ├── app/
 │   │   ├── mu-plugins/       ← Must-use plugins (Composer-managed)
@@ -294,59 +377,67 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ## Commands & Workflows
 
-### Composer
+### Docker (local development)
 
 ```bash
-# Install dependencies
-composer install
-
-# Update dependencies (with version constraints)
-composer update
-
-# Check code style (Pint)
-composer lint
-
-# Fix code style automatically
-composer lint:fix
-
-# Add a WordPress plugin
-composer require wp-plugin/plugin-name
-
-# View installed packages
-composer show
-```
-
-### WordPress
-
-```bash
-# Via make (inside Docker)
-make wp core version
-make wp plugin list
-make wp user list
-
-# Direct WP-CLI
-wp core install --url=http://localhost --title="Test"
-wp plugin activate redis-cache
-wp cache flush
-```
-
-### Local Development
-
-```bash
-# Start Docker stack
+# Start/stop
 make up
+make down
 
-# Access shell
+# First time or after Dockerfile changes
+make rebuild
+
+# Shell access
 make bash
 
 # View logs
 make logs
+```
 
-# Stop
-make down
+### Composer (inside Docker)
 
-# Rebuild containers
-make rebuild
+```bash
+make composer install
+make composer update
+make composer require wp-plugin/plugin-name
+make composer show
+
+# Code style
+composer lint          # Check (Pint)
+composer lint:fix      # Fix
+```
+
+### WP-CLI (inside Docker)
+
+```bash
+# Simple commands via make
+make wp plugin list
+make wp core version
+make wp user list
+
+# Commands with flags — use docker compose exec
+docker compose exec php wp --allow-root core install \
+  --url=http://localhost \
+  --title="My Site" \
+  --admin_user=admin \
+  --admin_password=password \
+  --admin_email=admin@example.com
+
+docker compose exec php wp --allow-root theme activate canopy
+docker compose exec php wp --allow-root plugin activate litespeed-cache
+docker compose exec php wp --allow-root cache flush
+
+# Alternative: use ARGS= for flags
+make wp core install ARGS="--url=http://localhost --title='My Site'"
+```
+
+### Without Docker
+
+```bash
+composer install
+composer lint
+wp core install --url=https://example.com --title="My Site" ...
+wp theme activate canopy --allow-root
 ```
 
 ---
@@ -418,11 +509,11 @@ Use in Twig:
 ### Adding a Plugin
 
 ```bash
-# Via Composer
-composer require wp-plugin/yoast-seo
+# Via Composer (inside Docker)
+make composer require wp-plugin/yoast-seo
 
 # Activate
-wp plugin activate yoast-seo --allow-root
+docker compose exec php wp --allow-root plugin activate yoast-seo
 ```
 
 ---
@@ -432,7 +523,7 @@ wp plugin activate yoast-seo --allow-root
 ### PHP
 
 - **Version:** 8.5+
-- **Namespacing:** `namespace App;` (PSR-4: `Canopy\` in `src/`)
+- **Namespacing:** `namespace Canopy;` (PSR-4: `Canopy\` in `src/`)
 - **Code style:** PSR-12 via Laravel Pint
   - 4 spaces indentation
   - camelCase for methods
@@ -463,7 +554,7 @@ wp plugin activate yoast-seo --allow-root
 - **Schema.org:** JSON-LD markup for rich snippets
 - **Robots.txt:** Dynamic (blocks AI bots, includes sitemap link)
 - **Sitemap:** Auto-generated (optional; set `wp_sitemaps_enabled` to enable WordPress native sitemaps)
-- **Caching:** Redis object cache + LiteSpeed/browser cache
+- **Caching:** LiteSpeed Cache plugin + browser cache headers
 
 ### Accessibility
 
@@ -523,6 +614,41 @@ wp eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
 
 ## Troubleshooting
 
+### PHP 8.5: Opcache is built-in
+
+On PHP 8.5, opcache is compiled statically into core. Do NOT add it to `docker-php-ext-install` or `docker-php-ext-enable` — it will fail with `'opcache' does not exist`.
+
+### PHP 8.5: WP-CLI deprecation warnings
+
+WP-CLI 2.12 shows `Creation of dynamic property` deprecation notices on PHP 8.5. These are cosmetic — WP-CLI functions correctly. These will be resolved in a future WP-CLI release.
+
+### "Class Env\Env not found" in browser
+
+The Bedrock boot files must follow the correct format:
+
+**`web/index.php`** must only load `wp-blog-header.php`:
+```php
+define('WP_USE_THEMES', true);
+require __DIR__ . '/wp/wp-blog-header.php';
+```
+
+**`web/wp-config.php`** must load autoload, config, and wp-settings:
+```php
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/config/application.php';
+require_once ABSPATH . 'wp-settings.php';
+```
+
+If `index.php` tries to load `config/application.php` directly (old Bedrock format), autoload won't be loaded and the `Env\Env` class won't be available.
+
+### WP-CLI: "Strange wp-config.php" error
+
+WP-CLI does a literal grep for the string `wp-settings.php` in `wp-config.php`. The file must contain:
+```php
+require_once ABSPATH . 'wp-settings.php';
+```
+Without this line, WP-CLI refuses to run.
+
 ### "Headers already sent" error
 
 Check that `functions.php` and `src/Site.php` have no output before the opening `<?php` tag.
@@ -550,22 +676,28 @@ Check:
 2. Filename matches template name (e.g., `single-portfolio.twig` for `single-portfolio.php`)
 3. PHP template file (e.g., `single-portfolio.php`) calls `Timber::render()` with correct path
 
-### Redis not caching
+### Docker: DB credentials mismatch
 
-Verify:
-1. Redis server is running (`redis-cli ping` should return `PONG`)
-2. Plugin "Redis Object Cache" is activated
-3. Connection settings in `.env` are correct
-4. Check `wp cache status --allow-root`
+The `.env` database credentials must match `docker-compose.yml`. Default Docker values:
+```
+DB_NAME=canopy_local
+DB_USER=dev
+DB_PASSWORD=dev
+DB_HOST=db
+```
+
+If you used `start.sh`, it syncs these automatically. If you set up manually, ensure both files match.
+
+### Docker: cached layers after Dockerfile changes
+
+If you edit the Dockerfile but `make up` uses old layers, run:
+```bash
+make rebuild   # = make down + build --no-cache + up
+```
 
 ---
 
 ## References
-
-- **`docs/`** directory — Developer guides
-  - [`docs/TIMBER.md`](docs/TIMBER.md) — Timber/Twig patterns and reference
-  - [`docs/CSS-PATTERNS.md`](docs/CSS-PATTERNS.md) — CSS conventions (tokens, BEM, layers)
-  - [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — Full deployment guide
 
 - **External**
   - [Timber Documentation](https://timber.github.io/docs/v2/)

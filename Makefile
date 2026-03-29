@@ -21,7 +21,7 @@ composer:
 	docker compose exec php composer $(filter-out $@,$(MAKECMDGOALS))
 
 wp:
-	docker compose exec php wp --allow-root $(filter-out $@,$(MAKECMDGOALS))
+	docker compose exec php wp --allow-root $(filter-out $@,$(MAKECMDGOALS)) $(ARGS)
 
 logs:
 	docker compose logs -f
