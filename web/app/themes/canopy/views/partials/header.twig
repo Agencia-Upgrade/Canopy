@@ -1,0 +1,19 @@
+{# Header — site header and navigation #}
+
+<header class="cnp-header" role="banner">
+	<div class="cnp-header__inner">
+		<a href="{{ site.url }}" class="cnp-logo">{{ site.name }}</a>
+
+		{% if menu %}
+			<nav class="cnp-nav" role="navigation">
+				<ul class="cnp-nav__list">
+					{% for item in menu.items %}
+						<li class="cnp-nav__item">
+							<a href="{{ item.url }}" class="cnp-nav__link">{{ item.title }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</nav>
+		{% endif %}
+	</div>
+</header>

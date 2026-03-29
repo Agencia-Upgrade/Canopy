@@ -1,0 +1,18 @@
+{# Single Post #}
+
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+	<article class="cnp-post">
+		<header class="cnp-post__header">
+			<h1 class="cnp-post__title">{{ post.title }}</h1>
+			<time class="cnp-post__date" datetime="{{ post.date|date('c') }}">
+				{{ post.date|date('F j, Y') }}
+			</time>
+		</header>
+
+		<div class="cnp-post__content">
+			{{ post.content|raw }}
+		</div>
+	</article>
+{% endblock %}

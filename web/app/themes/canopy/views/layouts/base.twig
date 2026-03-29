@@ -1,0 +1,18 @@
+{# Canopy — Base Layout #}
+{# Developed by Agência Upgrade — https://agenciaupgrade.com.br #}
+
+<!DOCTYPE html>
+<html lang="{{ site.language_attributes|replace({'lang=': ''}) }}">
+	<head>
+		{% include 'partials/head.twig' %}
+	</head>
+	<body class="{{ body_class }}">
+		{% include 'partials/header.twig' %}
+
+		<main id="main" class="main-content">
+			{% block content %}{% endblock %}
+		</main>
+
+		{% include 'partials/footer.twig' %}
+	</body>
+</html>

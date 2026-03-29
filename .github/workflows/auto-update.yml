@@ -1,0 +1,79 @@
+name: ⬆️ Auto-Update Dependencies
+# Agência Upgrade — https://agenciaupgrade.com.br
+
+on:
+  schedule:
+    - cron: '0 7 * * 1'  # Monday 07:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update:
+    name: Update dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: php-actions/composer@v6
+        with:
+          command: update
+          args: --no-interaction --no-scripts --ansi
+
+      - name: Check for WordPress major version bump
+        id: wp-check
+        run: |
+          OLD_WP=$(git show HEAD:composer.lock 2>/dev/null | jq -r '.packages[] | select(.name=="roots/wordpress") | .version' | head -1 || echo "")
+          NEW_WP=$(cat composer.lock | jq -r '.packages[] | select(.name=="roots/wordpress") | .version' | head -1 || echo "")
+
+          if [ -z "$OLD_WP" ] || [ -z "$NEW_WP" ]; then
+            echo "major=false" >> $GITHUB_OUTPUT
+          else
+            OLD_MAJOR=$(echo "$OLD_WP" | cut -d. -f1)
+            NEW_MAJOR=$(echo "$NEW_WP" | cut -d. -f1)
+            if [ "$OLD_MAJOR" != "$NEW_MAJOR" ]; then
+              echo "major=true" >> $GITHUB_OUTPUT
+              echo "old_version=$OLD_WP" >> $GITHUB_OUTPUT
+              echo "new_version=$NEW_WP" >> $GITHUB_OUTPUT
+            else
+              echo "major=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Alert on major WordPress update
+        if: steps.wp-check.outputs.major == 'true'
+        run: |
+          echo "⚠️ WordPress major version updated: ${{ steps.wp-check.outputs.old_version }} → ${{ steps.wp-check.outputs.new_version }}"
+          echo "Please review and test before deploying."
+
+      - name: Commit and push
+        if: hashFiles('composer.lock') != ''
+        run: |
+          git config user.email "noreply@github.com"
+          git config user.name "GitHub Actions"
+          git add composer.lock
+          git commit -m "chore: update dependencies" --allow-empty || true
+          git push
+
+      - name: Auto-deploy if changed
+        if: hashFiles('composer.lock') != '' && steps.wp-check.outputs.major != 'true'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          port: ${{ secrets.PROD_SSH_PORT }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            BEDROCK="${{ secrets.PROD_WP_PATH }}"
+            WP="wp --path=$BEDROCK/web/wp"
+
+            cd "$BEDROCK"
+            git pull origin main
+            composer install --no-dev --optimize-autoloader
+            $WP cache flush --allow-root
+            $WP eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
+            echo "✓ Auto-deploy completed"

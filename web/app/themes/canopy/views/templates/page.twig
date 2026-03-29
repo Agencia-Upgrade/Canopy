@@ -1,0 +1,15 @@
+{# Page #}
+
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+	<article class="cnp-page">
+		<header class="cnp-page__header">
+			<h1 class="cnp-page__title">{{ post.title }}</h1>
+		</header>
+
+		<div class="cnp-page__content">
+			{{ post.content|raw }}
+		</div>
+	</article>
+{% endblock %}

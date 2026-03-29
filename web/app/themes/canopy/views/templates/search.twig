@@ -1,0 +1,26 @@
+{# Search Results #}
+
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+	<div class="cnp-search">
+		<header class="cnp-search__header">
+			<h1 class="cnp-search__title">Search Results for "{{ wp_query.get('s') }}"</h1>
+		</header>
+
+		{% if posts %}
+			<div class="cnp-search__list">
+				{% for post in posts %}
+					<article class="cnp-search__item">
+						<h2 class="cnp-search__item-title">
+							<a href="{{ post.link }}">{{ post.title }}</a>
+						</h2>
+						<p class="cnp-search__item-excerpt">{{ post.excerpt }}</p>
+					</article>
+				{% endfor %}
+			</div>
+		{% else %}
+			<p class="cnp-search__no-results">No results found.</p>
+		{% endif %}
+	</div>
+{% endblock %}
