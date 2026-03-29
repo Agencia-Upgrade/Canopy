@@ -1,0 +1,47 @@
+# Canopy
+# Agência Upgrade — https://agenciaupgrade.com.br
+
+# Credenciais — nunca versionar
+.env
+.env.*
+!.env.example
+auth.json
+
+# WordPress core — instalado via Composer (roots/wordpress)
+/web/wp
+
+# Plugins — instalados via Composer
+/web/app/plugins/*
+!/web/app/plugins/.gitkeep
+
+# MU-plugins — instalados via Composer
+/web/app/mu-plugins/bedrock-autoloader.php
+/web/app/mu-plugins/disallow-indexing.php
+/web/app/mu-plugins/register-theme-directory.php
+/web/app/mu-plugins/wp-password-bcrypt.php
+
+# Uploads e arquivos gerados pelo WordPress
+/web/app/uploads/*
+!/web/app/uploads/.gitkeep
+/web/app/upgrade
+/web/app/languages/
+
+# Twig cache
+/web/app/themes/*/cache
+
+# Dependências PHP
+/vendor
+
+# Logs
+*.log
+
+# Claude Code
+/skills-lock.json
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

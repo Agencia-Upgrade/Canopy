@@ -1,0 +1,22 @@
+{# Index — Fallback template #}
+
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+	<div class="cnp-index">
+		<h1 class="cnp-index__title">{{ wp_title }}</h1>
+
+		{% if posts %}
+			<div class="cnp-index__list">
+				{% for post in posts %}
+					<article class="cnp-index__item">
+						<h2 class="cnp-index__item-title">
+							<a href="{{ post.link }}">{{ post.title }}</a>
+						</h2>
+						<p class="cnp-index__item-excerpt">{{ post.excerpt }}</p>
+					</article>
+				{% endfor %}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

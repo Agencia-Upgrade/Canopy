@@ -1,0 +1,18 @@
+{# Front Page #}
+
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+	<div class="cnp-hero">
+		<div class="cnp-hero__inner">
+			<h1 class="cnp-hero__title">Welcome to {{ site.name }}</h1>
+			<p class="cnp-hero__subtitle">Built with Canopy — Bedrock + Timber</p>
+		</div>
+	</div>
+
+	{% if post.content %}
+		<div class="cnp-container">
+			{{ post.content|raw }}
+		</div>
+	{% endif %}
+{% endblock %}

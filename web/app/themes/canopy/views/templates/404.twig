@@ -1,0 +1,11 @@
+{# 404 Not Found #}
+
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+	<div class="cnp-error-404">
+		<h1 class="cnp-error-404__title">404 — Page Not Found</h1>
+		<p class="cnp-error-404__message">Sorry, we couldn't find the page you're looking for.</p>
+		<a href="{{ site.url }}" class="cnp-error-404__link">Back to Home →</a>
+	</div>
+{% endblock %}

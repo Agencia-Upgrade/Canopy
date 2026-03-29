@@ -1,0 +1,90 @@
+{
+  "name": "agenciaupgrade/canopy",
+  "type": "project",
+  "license": "MIT",
+  "description": "Canopy — WordPress boilerplate with Bedrock + Timber, developed by Agência Upgrade",
+  "homepage": "https://agenciaupgrade.com.br",
+  "authors": [
+    {
+      "name": "Agência Upgrade",
+      "email": "contato@agenciaupgrade.com.br",
+      "homepage": "https://agenciaupgrade.com.br"
+    }
+  ],
+  "keywords": [
+    "bedrock",
+    "canopy",
+    "timber",
+    "twig",
+    "wordpress",
+    "composer",
+    "roots"
+  ],
+  "support": {
+    "issues": "https://github.com/Agencia-Upgrade/canopy/issues",
+    "forum": "https://discourse.roots.io/category/bedrock"
+  },
+  "repositories": [
+    {
+      "name": "wp-packages",
+      "type": "composer",
+      "url": "https://repo.wp-packages.org",
+      "only": [
+        "wp-plugin/*",
+        "wp-theme/*"
+      ]
+    }
+  ],
+  "require": {
+    "php": ">=8.5",
+    "composer/installers": "^2.2",
+    "oscarotero/env": "^2.1",
+    "roots/bedrock-autoloader": "^1.0",
+    "roots/bedrock-disallow-indexing": "^2.0",
+    "roots/wordpress": "^6.9",
+    "roots/wp-config": "^1.0",
+    "roots/wp-password-bcrypt": "^1.1",
+    "timber/timber": "^2.1",
+    "vlucas/phpdotenv": "^5.5",
+    "wp-plugin/litespeed-cache": "*",
+    "wp-plugin/redis-cache": "*"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.27",
+    "roave/security-advisories": "dev-latest"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "composer/installers": true,
+      "roots/wordpress-core-installer": true
+    },
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "installer-paths": {
+      "web/app/mu-plugins/{$name}/": [
+        "type:wordpress-muplugin"
+      ],
+      "web/app/plugins/{$name}/": [
+        "type:wordpress-plugin"
+      ],
+      "web/app/themes/{$name}/": [
+        "type:wordpress-theme"
+      ]
+    },
+    "wordpress-install-dir": "web/wp"
+  },
+  "autoload": {
+    "psr-4": {
+      "Canopy\\": "web/app/themes/canopy/src/"
+    }
+  },
+  "scripts": {
+    "lint": "pint --test",
+    "lint:fix": "pint"
+  }
+}

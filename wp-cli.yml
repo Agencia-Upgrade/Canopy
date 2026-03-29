@@ -1,0 +1,8 @@
+# WP-CLI — Canopy
+# Agência Upgrade — https://agenciaupgrade.com.br
+
+path: web/wp
+url: ${WP_HOME}
+
+apache_modules:
+  - mod_rewrite

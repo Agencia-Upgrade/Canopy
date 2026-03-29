@@ -1,0 +1,46 @@
+name: Deploy to Production
+# Agência Upgrade — https://agenciaupgrade.com.br
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to production
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.PROD_PATH }}
+
+            echo "→ Pulling latest code..."
+            git fetch origin
+            git reset --hard origin/main
+
+            echo "→ Installing dependencies..."
+            composer install --no-dev --optimize-autoloader --no-interaction --quiet
+
+            echo "→ Flushing rewrite rules..."
+            wp rewrite flush --allow-root --quiet
+
+            echo "→ Clearing caches..."
+            wp cache flush --allow-root --quiet
+            wp eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root --quiet
+
+            echo "→ Purging Cloudflare cache..."
+            curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+              -H "X-Auth-Email: ${{ secrets.CF_EMAIL }}" \
+              -H "X-Auth-Key: ${{ secrets.CF_API_KEY }}" \
+              -H "Content-Type: application/json" \
+              --data '{"purge_everything":true}'
+
+            echo "✓ Deployment complete"

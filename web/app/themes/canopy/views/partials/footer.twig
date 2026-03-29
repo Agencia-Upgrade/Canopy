@@ -1,0 +1,23 @@
+{# Footer — site footer #}
+
+<footer class="cnp-footer" role="contentinfo">
+	<div class="cnp-footer__inner">
+		{% if footer_menu %}
+			<nav class="cnp-footer__nav" role="navigation">
+				<ul class="cnp-footer__list">
+					{% for item in footer_menu.items %}
+						<li class="cnp-footer__item">
+							<a href="{{ item.url }}" class="cnp-footer__link">{{ item.title }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</nav>
+		{% endif %}
+
+		<p class="cnp-footer__credit">
+			Developed by <a href="https://agenciaupgrade.com.br" target="_blank" rel="noopener">Agência Upgrade</a>
+		</p>
+	</div>
+
+	{% wp_footer %}
+</footer>
