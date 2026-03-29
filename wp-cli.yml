@@ -4,5 +4,8 @@
 path: web/wp
 url: ${WP_HOME}
 
+server:
+  docroot: web
+
 apache_modules:
   - mod_rewrite

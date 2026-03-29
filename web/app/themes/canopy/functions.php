@@ -10,8 +10,7 @@
  * @link       https://agenciaupgrade.com.br
  */
 
-namespace App;
-
+use Canopy\Site;
 use Timber\Timber;
 
 Timber::init();

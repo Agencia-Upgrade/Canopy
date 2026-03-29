@@ -46,8 +46,7 @@
     "roots/wp-password-bcrypt": "^1.1",
     "timber/timber": "^2.1",
     "vlucas/phpdotenv": "^5.5",
-    "wp-plugin/litespeed-cache": "*",
-    "wp-plugin/redis-cache": "*"
+    "wp-plugin/litespeed-cache": "*"
   },
   "require-dev": {
     "laravel/pint": "^1.27",
@@ -81,7 +80,10 @@
   "autoload": {
     "psr-4": {
       "Canopy\\": "web/app/themes/canopy/src/"
-    }
+    },
+    "classmap": [
+      "web/app/themes/canopy/src/"
+    ]
   },
   "scripts": {
     "lint": "pint --test",

@@ -21,9 +21,8 @@
 - **Bedrock** — WordPress as a Composer dependency, cleaner folder structure
 - **Timber 2.x** — Twig templating for cleaner PHP/HTML separation
 - **Laravel Pint** — PSR-12 code formatting (PSR-4 namespacing)
-- **Redis Cache** — High-performance object caching
-- **Zero Build Step** — CSS and JS committed directly; optional minification
 - **LiteSpeed Cache** — File-first cache configuration for production
+- **Zero Build Step** — CSS and JS committed directly; optional minification
 - **GitHub Actions** — Automated deployment and weekly dependency updates
 - **Cloudflare-Ready** — DNS, CDN, and image transformation integration
 - **Accessibility & Performance** — WCAG 2.2 AA, Lighthouse ≥ 95, Schema.org
@@ -34,48 +33,79 @@
 
 - PHP 8.5+
 - Composer 2.x
-- Docker (for local development) or web hosting with Node.js (optional)
+- Docker (for local development) or web hosting
 - MySQL 8.0+ or MariaDB 11+
 
-### Installation
+### Option A: Automated Setup (Recommended)
 
-1. Clone and navigate:
-   ```bash
-   git clone https://github.com/Agencia-Upgrade/canopy.git my-site
-   cd my-site
-   ```
+The `start.sh` script renames the theme, replaces namespaces/prefixes, generates `.env`, and resets Git history:
 
-2. Copy environment file:
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+git clone https://github.com/Agencia-Upgrade/canopy.git my-site
+cd my-site
+bash start.sh
+```
 
-3. Edit `.env` with your values:
-   ```
-   DB_NAME=my_database
-   DB_USER=root
-   DB_PASSWORD=password
-   WP_HOME=http://localhost
-   WP_ENV=development
-   ```
+Follow the prompts — choose **Local (Docker)** for development. Then:
 
-4. Install dependencies:
-   ```bash
-   composer install
-   ```
+```bash
+make rebuild
+make composer install
+```
 
-5. Initialize WordPress:
-   ```bash
-   # If using WP-CLI
-   wp core install --url=http://localhost --title="My Site" --admin_user=admin --admin_email=admin@example.com --admin_password=password --allow-root
+Install WordPress:
 
-   # Or manually via http://localhost/wp/wp-admin/install.php
-   ```
+```bash
+docker compose exec php wp --allow-root core install \
+  --url=http://localhost \
+  --title="My Site" \
+  --admin_user=admin \
+  --admin_password=password \
+  --admin_email=admin@example.com
 
-6. Activate the theme:
-   ```bash
-   wp theme activate canopy --allow-root
-   ```
+docker compose exec php wp --allow-root theme activate my-site
+```
+
+Open http://localhost in your browser.
+
+### Option B: Manual Setup
+
+```bash
+git clone https://github.com/Agencia-Upgrade/canopy.git my-site
+cd my-site
+cp .env.example .env
+```
+
+Edit `.env` with your values:
+
+```
+DB_NAME=canopy_local
+DB_USER=dev
+DB_PASSWORD=dev
+DB_HOST=db
+WP_HOME=http://localhost
+WP_ENV=development
+```
+
+Start Docker and install dependencies:
+
+```bash
+make rebuild
+make composer install
+```
+
+Install WordPress:
+
+```bash
+docker compose exec php wp --allow-root core install \
+  --url=http://localhost \
+  --title="My Site" \
+  --admin_user=admin \
+  --admin_password=password \
+  --admin_email=admin@example.com
+
+docker compose exec php wp --allow-root theme activate canopy
+```
 
 ### Local Development with Docker
 
@@ -83,17 +113,47 @@
 # Start containers
 make up
 
-# Access WordPress
-# Frontend: http://localhost
-# Admin: http://localhost/wp/wp-admin
+# First time or after Dockerfile changes
+make rebuild
 
-# Run commands inside the container
+# Install/update Composer packages
 make composer install
+make composer require wp-plugin/plugin-name
+
+# WP-CLI (simple commands via make)
 make wp plugin list
-make bash  # Full shell access
+make wp core version
+
+# WP-CLI (commands with flags — use docker compose exec directly)
+docker compose exec php wp --allow-root core install \
+  --url=http://localhost --title="My Site" \
+  --admin_user=admin --admin_password=password \
+  --admin_email=admin@example.com
+
+# Shell access
+make bash
+
+# View logs
+make logs
 
 # Stop containers
 make down
+```
+
+> **Note:** `make wp` works for simple WP-CLI commands. For commands with `--flags`, use `docker compose exec php wp --allow-root ...` directly, or pass flags via `ARGS=`: `make wp core install ARGS="--url=http://localhost"`.
+
+### Without Docker (Server/Hosting)
+
+```bash
+composer install
+cp .env.example .env
+# Edit .env with your database and site URLs
+
+wp core install --url=https://example.com --title="My Site" \
+  --admin_user=admin --admin_password=password \
+  --admin_email=admin@example.com --allow-root
+
+wp theme activate canopy --allow-root
 ```
 
 ### Code Quality
@@ -112,6 +172,9 @@ composer lint:fix
 Canopy/
 ├── config/                    # WordPress config (application.php + environments)
 ├── web/
+│   ├── index.php             # Entry point (loads wp-blog-header.php)
+│   ├── wp-config.php         # Autoload + config + wp-settings.php
+│   ├── wp/                   # WordPress core (Composer-managed, .gitignored)
 │   ├── app/
 │   │   ├── mu-plugins/       # Must-use plugins (managed by Composer)
 │   │   ├── plugins/          # Plugins (managed by Composer)
@@ -129,14 +192,26 @@ Canopy/
 │   │           │   ├── fonts/
 │   │           │   └── images/
 │   │           └── cache/    # Twig cache (generated)
-│   ├── wp/                   # WordPress core (Composer-managed)
-│   └── index.php             # Web root entry
+├── .docker/                   # Docker config (Dockerfile, nginx, php.ini)
+├── docker-compose.yml         # Local dev stack (nginx, php, mariadb, mailpit)
+├── Makefile                   # Docker shortcuts (make up, make wp, etc.)
+├── start.sh                   # Project scaffolding script
 ├── .env                       # Environment config (not versioned)
 ├── .env.example              # Environment template
 ├── composer.json
 ├── CLAUDE.md                 # AI context
-├── .claude/                  # Domain-specific guides
 └── .github/workflows/        # GitHub Actions
+```
+
+### Boot Flow
+
+```
+Browser → nginx → web/index.php
+  → web/wp/wp-blog-header.php
+    → web/wp-config.php
+      → vendor/autoload.php (Composer)
+      → config/application.php (.env, constants)
+      → wp-settings.php (WordPress boot)
 ```
 
 ## Configuration
@@ -209,19 +284,10 @@ Configure these secrets in your repository:
 ### Manual Deployment
 
 ```bash
-# SSH to server
 ssh user@host
-
-# Navigate to project
 cd /path/to/project
-
-# Pull code
 git pull origin main
-
-# Install dependencies
 composer install --no-dev --optimize-autoloader
-
-# Flush caches
 wp rewrite flush
 wp cache flush
 wp eval 'Timber\Cache\Cleaner::clear_cache_timber();'
@@ -249,9 +315,35 @@ Or commit pre-minified files to Git.
 - **CSS** — Token-first, BEM naming (`cnp-*` prefix), `@layer` for organization
 - **JS** — Vanilla JS, GSAP for animations, defer/async loading
 - **HTML** — Semantic HTML5, ARIA where needed
-- **Performance** — Lighthouse ≥ 95, LiteSpeed Cache, Redis
+- **Performance** — Lighthouse ≥ 95, LiteSpeed Cache
 - **Accessibility** — WCAG 2.2 AA, `prefers-reduced-motion` respected
 - **SEO** — Schema.org markup, XML sitemap, robots.txt, Open Graph tags
+
+## Troubleshooting
+
+### PHP 8.5 Notes
+
+- **Opcache** is compiled statically into PHP 8.5 core — do NOT include it in `docker-php-ext-install` or `docker-php-ext-enable`.
+- **WP-CLI deprecation warnings** (e.g., `Creation of dynamic property`) are cosmetic and do not affect functionality. WP-CLI 2.12+ on PHP 8.5 will show these until upstream fixes land.
+
+### Docker: "Class Env\Env not found"
+
+The boot files must follow modern Bedrock format:
+- `web/index.php` loads `wp-blog-header.php` (NOT `config/application.php` directly)
+- `web/wp-config.php` loads autoload → application → wp-settings.php
+
+If you see this error, verify `web/index.php` and `web/wp-config.php` match the files in this repo.
+
+### WP-CLI: "Strange wp-config.php"
+
+WP-CLI requires a literal `wp-settings.php` string in `wp-config.php`. The file must contain:
+```php
+require_once ABSPATH . 'wp-settings.php';
+```
+
+### CSS not updating in browser
+
+The theme uses `filemtime()` for cache-busting. Hard refresh with Ctrl+Shift+R / Cmd+Shift+R.
 
 ## Resources
 

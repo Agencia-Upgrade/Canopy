@@ -10,7 +10,7 @@
  * @link       https://agenciaupgrade.com.br
  */
 
-namespace App;
+namespace Canopy;
 
 use Timber\Site as TimberSite;
 use Timber\Timber;
