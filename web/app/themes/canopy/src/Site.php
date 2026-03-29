@@ -305,6 +305,6 @@ class Site extends TimberSite
         $phpmailer->SMTPAuth   = true;
         $phpmailer->Username   = getenv('SMTP_USER');
         $phpmailer->Password   = getenv('SMTP_PASS');
-        $phpmailer->SMTPSecure = 'tls';
+        $phpmailer->SMTPSecure = getenv('SMTP_ENCRYPTION') ?: 'tls';
     }
 }

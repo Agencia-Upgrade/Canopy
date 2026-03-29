@@ -205,6 +205,7 @@ ${CF_IMAGES_LINE}
 # SMTP (leave blank in dev — Mailpit handles it)
 SMTP_HOST=''
 SMTP_PORT='465'
+SMTP_ENCRYPTION='ssl'
 SMTP_USER=''
 SMTP_PASS=''
 SMTP_FROM='noreply@${LOCAL_DOMAIN}'
