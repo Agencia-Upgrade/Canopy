@@ -1,7 +1,7 @@
 # Canopy — Makefile
 # Agência Upgrade — https://agenciaupgrade.com.br
 
-.PHONY: up down build rebuild bash composer wp logs ps
+.PHONY: up down build rebuild bash composer wp logs ps setup
 
 up:
 	docker compose up -d
@@ -21,13 +21,37 @@ composer:
 	docker compose exec php composer $(filter-out $@,$(MAKECMDGOALS))
 
 wp:
-	docker compose exec php wp --allow-root $(filter-out $@,$(MAKECMDGOALS)) $(ARGS)
+	@docker compose exec php wp --allow-root $(filter-out $@,$(MAKECMDGOALS)) $(ARGS) 2>/dev/null
 
 logs:
 	docker compose logs -f
 
 ps:
 	docker compose ps
+
+setup:
+	@test -f .env || cp .env.example .env
+	@echo "Generating salts..."
+	@sed -i "s|AUTH_KEY='generateme'|AUTH_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i "s|SECURE_AUTH_KEY='generateme'|SECURE_AUTH_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i "s|LOGGED_IN_KEY='generateme'|LOGGED_IN_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i "s|NONCE_KEY='generateme'|NONCE_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i "s|AUTH_SALT='generateme'|AUTH_SALT='$$(openssl rand -base64 48)'|" .env
+	@sed -i "s|SECURE_AUTH_SALT='generateme'|SECURE_AUTH_SALT='$$(openssl rand -base64 48)'|" .env
+	@sed -i "s|LOGGED_IN_SALT='generateme'|LOGGED_IN_SALT='$$(openssl rand -base64 48)'|" .env
+	@sed -i "s|NONCE_SALT='generateme'|NONCE_SALT='$$(openssl rand -base64 48)'|" .env
+	$(MAKE) rebuild
+	docker compose exec php composer install
+	docker compose exec php wp --allow-root core install \
+		--url=http://localhost:8080 \
+		--title="Canopy Site" \
+		--admin_user=admin \
+		--admin_password=admin \
+		--admin_email=admin@example.com 2>/dev/null
+	docker compose exec php wp --allow-root theme activate canopy 2>/dev/null
+	@echo ""
+	@echo "Done! Access http://localhost:8080"
+	@echo "  Admin: http://localhost:8080/wp/wp-admin (admin/admin)"
 
 %:
 	@:

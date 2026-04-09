@@ -59,6 +59,16 @@ cp .env.example .env
 
 ### 2. Local development (Docker)
 
+**Quick start (one command):**
+
+```bash
+make setup
+# Creates .env, generates salts, builds containers, installs WP, activates theme
+# Access: http://localhost:8080 — Admin: http://localhost:8080/wp/wp-admin (admin/admin)
+```
+
+**Manual setup:**
+
 ```bash
 # First time: build containers and install
 make rebuild
@@ -66,7 +76,7 @@ make composer install
 
 # Install WordPress
 docker compose exec php wp --allow-root core install \
-  --url=http://localhost \
+  --url=http://localhost:8080 \
   --title="My Site" \
   --admin_user=admin \
   --admin_password=password \
@@ -93,12 +103,12 @@ make wp core version
 
 # Commands with flags — use docker compose exec directly
 docker compose exec php wp --allow-root core install \
-  --url=http://localhost --title="My Site" \
+  --url=http://localhost:8080 --title="My Site" \
   --admin_user=admin --admin_password=password \
   --admin_email=admin@example.com
 
 # Or pass flags via ARGS variable
-make wp core install ARGS="--url=http://localhost --title='My Site'"
+make wp core install ARGS="--url=http://localhost:8080 --title='My Site'"
 
 # Shell access for multiple commands
 make bash
@@ -417,7 +427,7 @@ make wp user list
 
 # Commands with flags — use docker compose exec
 docker compose exec php wp --allow-root core install \
-  --url=http://localhost \
+  --url=http://localhost:8080 \
   --title="My Site" \
   --admin_user=admin \
   --admin_password=password \
@@ -428,7 +438,7 @@ docker compose exec php wp --allow-root plugin activate litespeed-cache
 docker compose exec php wp --allow-root cache flush
 
 # Alternative: use ARGS= for flags
-make wp core install ARGS="--url=http://localhost --title='My Site'"
+make wp core install ARGS="--url=http://localhost:8080 --title='My Site'"
 ```
 
 ### Without Docker
@@ -474,7 +484,9 @@ In `Site.php`:
 ```php
 public function addFiltersToTwig($filters)
 {
-    $filters['uppercase'] = new TwigFilter('uppercase', fn($text) => strtoupper($text));
+    $filters['uppercase'] = [
+        'callable' => fn($text) => strtoupper($text),
+    ];
     return $filters;
 }
 ```
@@ -489,12 +501,14 @@ Use in Twig:
 ```php
 public function addFunctionsToTwig($functions)
 {
-    $functions['get_related_posts'] = new TwigFunction('get_related_posts', function($post_id, $limit = 3) {
-        return Timber::get_posts([
-            'post__not_in' => [$post_id],
-            'posts_per_page' => $limit,
-        ]);
-    });
+    $functions['get_related_posts'] = [
+        'callable' => function($post_id, $limit = 3) {
+            return Timber::get_posts([
+                'post__not_in' => [$post_id],
+                'posts_per_page' => $limit,
+            ]);
+        },
+    ];
     return $functions;
 }
 ```

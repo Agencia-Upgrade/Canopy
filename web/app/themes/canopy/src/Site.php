@@ -15,8 +15,6 @@ namespace Canopy;
 use Timber\Site as TimberSite;
 use Timber\Timber;
 use Twig\Environment;
-use Twig\TwigFilter;
-use Twig\TwigFunction;
 
 /**
  * Site class
@@ -208,9 +206,11 @@ class Site extends TimberSite
      */
     public function addFiltersToTwig($filters)
     {
-        $filters['excerpt'] = new TwigFilter('excerpt', function ($text, $length = 55) {
-            return wp_trim_words($text, $length);
-        });
+        $filters['excerpt'] = [
+            'callable' => function ($text, $length = 55) {
+                return wp_trim_words($text, $length);
+            },
+        ];
 
         return $filters;
     }
@@ -223,7 +223,9 @@ class Site extends TimberSite
      */
     public function addFunctionsToTwig($functions)
     {
-        $functions['get_theme_mod'] = new TwigFunction('get_theme_mod', 'get_theme_mod');
+        $functions['get_theme_mod'] = [
+            'callable' => 'get_theme_mod',
+        ];
 
         return $functions;
     }
