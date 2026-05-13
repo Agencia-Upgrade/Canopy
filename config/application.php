@@ -125,6 +125,12 @@ Config::define('NONCE_SALT', env('NONCE_SALT'));
 Config::define('WPLANG', env('WPLANG') ?: '');
 
 /**
+ * Memory Limits
+ */
+Config::define('WP_MEMORY_LIMIT', '256M');
+Config::define('WP_MAX_MEMORY_LIMIT', '256M');
+
+/**
  * Custom Settings
  */
 Config::define('AUTOMATIC_UPDATER_DISABLED', true);
