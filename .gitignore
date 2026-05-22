@@ -14,17 +14,15 @@ auth.json
 /web/app/plugins/*
 !/web/app/plugins/.gitkeep
 
-# MU-plugins — instalados via Composer
-/web/app/mu-plugins/bedrock-autoloader.php
-/web/app/mu-plugins/disallow-indexing.php
-/web/app/mu-plugins/register-theme-directory.php
-/web/app/mu-plugins/wp-password-bcrypt.php
+# MU-plugins — instalados via Composer (type:wordpress-muplugin → diretório)
+/web/app/mu-plugins/bedrock-disallow-indexing/
 
 # Uploads e arquivos gerados pelo WordPress
 /web/app/uploads/*
 !/web/app/uploads/.gitkeep
 /web/app/upgrade
 /web/app/languages/
+/web/app/litespeed/
 
 # Twig cache
 /web/app/themes/*/cache
@@ -32,11 +30,15 @@ auth.json
 # Dependências PHP
 /vendor
 
+# PHPStan cache
+/tmp/
+
 # Logs
 *.log
 
 # Claude Code
 /skills-lock.json
+/.claude/
 
 # OS / editors
 .DS_Store

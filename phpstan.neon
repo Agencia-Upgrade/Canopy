@@ -1,0 +1,14 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 5
+    phpVersion: 80500
+    tmpDir: tmp/phpstan
+    paths:
+        - web/app/themes/canopy/src
+    excludePaths:
+        - vendor
+        - web/wp
+        - web/app/mu-plugins
+        - web/app/plugins
