@@ -32,26 +32,30 @@ ps:
 setup:
 	@test -f .env || cp .env.example .env
 	@echo "Generating salts..."
-	@sed -i "s|AUTH_KEY='generateme'|AUTH_KEY='$$(openssl rand -base64 48)'|" .env
-	@sed -i "s|SECURE_AUTH_KEY='generateme'|SECURE_AUTH_KEY='$$(openssl rand -base64 48)'|" .env
-	@sed -i "s|LOGGED_IN_KEY='generateme'|LOGGED_IN_KEY='$$(openssl rand -base64 48)'|" .env
-	@sed -i "s|NONCE_KEY='generateme'|NONCE_KEY='$$(openssl rand -base64 48)'|" .env
-	@sed -i "s|AUTH_SALT='generateme'|AUTH_SALT='$$(openssl rand -base64 48)'|" .env
-	@sed -i "s|SECURE_AUTH_SALT='generateme'|SECURE_AUTH_SALT='$$(openssl rand -base64 48)'|" .env
-	@sed -i "s|LOGGED_IN_SALT='generateme'|LOGGED_IN_SALT='$$(openssl rand -base64 48)'|" .env
-	@sed -i "s|NONCE_SALT='generateme'|NONCE_SALT='$$(openssl rand -base64 48)'|" .env
-	$(MAKE) rebuild
+	@sed -i '' "s|AUTH_KEY='generateme'|AUTH_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i '' "s|SECURE_AUTH_KEY='generateme'|SECURE_AUTH_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i '' "s|LOGGED_IN_KEY='generateme'|LOGGED_IN_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i '' "s|NONCE_KEY='generateme'|NONCE_KEY='$$(openssl rand -base64 48)'|" .env
+	@sed -i '' "s|AUTH_SALT='generateme'|AUTH_SALT='$$(openssl rand -base64 48)'|" .env
+	@sed -i '' "s|SECURE_AUTH_SALT='generateme'|SECURE_AUTH_SALT='$$(openssl rand -base64 48)'|" .env
+	@sed -i '' "s|LOGGED_IN_SALT='generateme'|LOGGED_IN_SALT='$$(openssl rand -base64 48)'|" .env
+	@sed -i '' "s|NONCE_SALT='generateme'|NONCE_SALT='$$(openssl rand -base64 48)'|" .env
+	docker compose down --remove-orphans 2>/dev/null || true
+	docker compose build --no-cache php
+	docker compose up -d
 	docker compose exec php composer install
+	@WP_HOME=$$(grep '^WP_HOME' .env | cut -d= -f2 | tr -d "'\"`"); \
 	docker compose exec php wp --allow-root core install \
-		--url=http://localhost:8080 \
+		--url="$$WP_HOME" \
 		--title="Canopy Site" \
 		--admin_user=admin \
 		--admin_password=admin \
 		--admin_email=admin@example.com 2>/dev/null
 	docker compose exec php wp --allow-root theme activate canopy 2>/dev/null
-	@echo ""
-	@echo "Done! Access http://localhost:8080"
-	@echo "  Admin: http://localhost:8080/wp/wp-admin (admin/admin)"
+	@WP_HOME=$$(grep '^WP_HOME' .env | cut -d= -f2 | tr -d "'\"`"); \
+	echo ""; \
+	echo "Done! Access $$WP_HOME"; \
+	echo "  Admin: $$WP_HOME/wp/wp-admin (admin/admin)"
 
 %:
 	@:

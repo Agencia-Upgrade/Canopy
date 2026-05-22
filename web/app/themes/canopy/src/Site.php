@@ -14,7 +14,6 @@ namespace Canopy;
 
 use Timber\Site as TimberSite;
 use Timber\Timber;
-use Twig\Environment;
 
 /**
  * Site class
@@ -169,7 +168,7 @@ class Site extends TimberSite
     /**
      * Customize register — add theme customizer options
      */
-    public function customizeRegister($customize): void
+    public function customizeRegister(\WP_Customize_Manager $customize): void
     {
         // Add customizer sections, settings, and controls here
     }
@@ -187,10 +186,10 @@ class Site extends TimberSite
     /**
      * Add data to Twig context
      *
-     * @param array $context Current Twig context
-     * @return array Modified context
+     * @param array<string, mixed> $context Current Twig context
+     * @return array<string, mixed> Modified context
      */
-    public function addToContext($context)
+    public function addToContext(array $context): array
     {
         $context['menu'] = Timber::get_menu('primary_navigation');
         $context['footer_menu'] = Timber::get_menu('footer_navigation');
@@ -201,10 +200,10 @@ class Site extends TimberSite
     /**
      * Add custom filters to Twig
      *
-     * @param array $filters Current filters
-     * @return array Modified filters
+     * @param array<string, mixed> $filters Current filters
+     * @return array<string, mixed> Modified filters
      */
-    public function addFiltersToTwig($filters)
+    public function addFiltersToTwig(array $filters): array
     {
         $filters['excerpt'] = [
             'callable' => function ($text, $length = 55) {
@@ -218,10 +217,10 @@ class Site extends TimberSite
     /**
      * Add custom functions to Twig
      *
-     * @param array $functions Current functions
-     * @return array Modified functions
+     * @param array<string, mixed> $functions Current functions
+     * @return array<string, mixed> Modified functions
      */
-    public function addFunctionsToTwig($functions)
+    public function addFunctionsToTwig(array $functions): array
     {
         $functions['get_theme_mod'] = [
             'callable' => 'get_theme_mod',
@@ -233,10 +232,10 @@ class Site extends TimberSite
     /**
      * Update Twig environment options
      *
-     * @param array $options Current options
-     * @return array Modified options
+     * @param array<string, mixed> $options Current options
+     * @return array<string, mixed> Modified options
      */
-    public function updateTwigEnvironmentOptions($options)
+    public function updateTwigEnvironmentOptions(array $options): array
     {
         if (defined('WP_DEBUG') && WP_DEBUG) {
             $options['auto_reload'] = true;
@@ -253,10 +252,10 @@ class Site extends TimberSite
      * Update robots.txt
      *
      * @param string $output Current robots.txt output
-     * @param string $host Current host
+     * @param string $host   Current host
      * @return string Modified robots.txt
      */
-    public function updateRobotsTxt($output, $host)
+    public function updateRobotsTxt(string $output, string $host): string
     {
         $home = parse_url(home_url());
         $path = !empty($home['path']) ? $home['path'] : '';
@@ -270,10 +269,8 @@ class Site extends TimberSite
 
     /**
      * Mail from
-     *
-     * @return string Email address
      */
-    public function mailFrom()
+    public function mailFrom(): string
     {
         $host = parse_url(home_url(), PHP_URL_HOST);
 
@@ -282,10 +279,8 @@ class Site extends TimberSite
 
     /**
      * Mail from name
-     *
-     * @return string Display name
      */
-    public function mailFromName()
+    public function mailFromName(): string
     {
         return getenv('SMTP_FROM_NAME') ?: get_bloginfo('name');
     }
@@ -295,7 +290,7 @@ class Site extends TimberSite
      *
      * @param \PHPMailer\PHPMailer\PHPMailer $phpmailer PHPMailer instance
      */
-    public function configureSMTP($phpmailer): void
+    public function configureSMTP(\PHPMailer\PHPMailer\PHPMailer $phpmailer): void
     {
         if (!getenv('SMTP_HOST')) {
             return;

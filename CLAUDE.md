@@ -1,7 +1,7 @@
 # CLAUDE.md — Canopy WordPress Boilerplate
 
 > Developed by **Agência Upgrade** — https://agenciaupgrade.com.br
-> Stack: WordPress 6.9 · Bedrock · Timber 2.x · Twig · PHP 8.5 · PSR-12
+> Stack: WordPress 7.0 · Bedrock · Timber 2.x · Twig · PHP 8.5 · PSR-12
 
 ---
 
@@ -23,14 +23,14 @@ Canopy is a production-ready WordPress boilerplate that combines Bedrock's infra
 
 | Component | Version | Notes |
 |---|---|---|
-| **WordPress** | ^6.9 | Follows minor/patch, blocks MAJOR via Actions |
+| **WordPress** | ^7.0 | Follows minor/patch, blocks MAJOR via Actions |
 | **PHP** | >=8.5 | PSR-4 namespacing, modern OOP patterns. Opcache is built into core. |
 | **Bedrock** | Latest | Git-first, Composer-managed, `.env` per environment |
 | **Timber** | ^2.1 | Installed in Bedrock root, available to any theme |
 | **Twig** | 3.x | Via Timber, clean separation of PHP/HTML |
 | **Laravel Pint** | ^1.0 | PSR-12 code formatting, `composer lint:fix` |
+| **PHPStan** | ^2.1 | Static analysis level 5 via `composer phpstan` |
 | **LiteSpeed Cache** | Latest | Production cache plugin via Composer |
-| **PHP-BCrypt** | ^1.1 | Secure password hashing via `roots/wp-password-bcrypt` |
 
 ---
 
@@ -152,7 +152,7 @@ Browser → nginx → web/index.php
 **Key files:**
 
 - **`web/index.php`** — Minimal: defines `WP_USE_THEMES` and loads `wp-blog-header.php`. Does NOT load autoload or config directly.
-- **`web/wp-config.php`** — Three `require_once` lines: autoload → application → wp-settings. WP-CLI requires the literal `wp-settings.php` string to be present.
+- **`web/wp-config.php`** — Opens with a `defined('WP_CACHE') || define('WP_CACHE', true)` guard (prevents LiteSpeed Cache from injecting a bare `define()` and avoids PHP 9 redeclaration fatal), then three `require_once` lines: autoload → application → wp-settings. WP-CLI requires the literal `wp-settings.php` string to be present.
 - **`config/application.php`** — Loads `.env` via phpdotenv, defines all WP constants via `Roots\WPConfig\Config`, sets `ABSPATH`.
 
 ---
@@ -164,6 +164,7 @@ canopy/
 ├── .env.example              ← Template environment (versioned)
 ├── .env                      ← Actual config (NOT versioned)
 ├── composer.json             ← Root Bedrock dependencies + PSR-4 autoload
+├── phpstan.neon              ← PHPStan static analysis config (level 5)
 ├── pint.json                 ← Laravel Pint PSR-12 config
 ├── wp-cli.yml                ← WP-CLI configuration (path, docroot)
 ├── Makefile                  ← Docker shortcuts (make up/down/wp/bash/rebuild)
@@ -192,7 +193,7 @@ canopy/
 │   ├── wp-config.php         ← Autoload → application.php → wp-settings.php
 │   ├── wp/                   ← WordPress core (Composer-managed, .gitignored)
 │   ├── app/
-│   │   ├── mu-plugins/       ← Must-use plugins (Composer-managed)
+│   │   ├── mu-plugins/       ← Must-use plugins (Composer-managed as directories)
 │   │   ├── plugins/          ← Regular plugins (Composer-managed)
 │   │   ├── uploads/          ← User uploads (.gitignored)
 │   │   └── themes/
@@ -230,6 +231,7 @@ canopy/
 │   │           └── [other theme files]
 │
 ├── .github/workflows/
+│   ├── ci.yml                   ← Lint + PHPStan on every push/PR
 │   ├── deploy-production.yml    ← Deploy on push to main
 │   └── auto-update.yml          ← Weekly composer update + auto-deploy
 │
@@ -259,7 +261,7 @@ class Site extends TimberSite {
   public function themeSupports(): void { /* theme supports */ }
   public function registerPostTypes(): void { /* CPTs */ }
   public function enqueueAssets(): void { /* CSS + JS + GSAP */ }
-  public function addToContext($context): array { /* Twig global data */ }
+  public function addToContext(array $context): array { /* Twig global data */ }
   // ... more methods
 }
 ```
@@ -280,7 +282,7 @@ class Site extends TimberSite {
 Data passed to Twig templates via `addToContext()`:
 
 ```php
-public function addToContext($context) {
+public function addToContext(array $context): array {
     $context['menu'] = Timber::get_menu('primary_navigation');
     $context['footer_menu'] = Timber::get_menu('footer_navigation');
     return $context;
@@ -413,8 +415,9 @@ make composer require wp-plugin/plugin-name
 make composer show
 
 # Code style
-composer lint          # Check (Pint)
+composer lint          # Check (Pint PSR-12)
 composer lint:fix      # Fix
+composer phpstan       # Static analysis (level 5)
 ```
 
 ### WP-CLI (inside Docker)
@@ -446,6 +449,7 @@ make wp core install ARGS="--url=http://localhost:8080 --title='My Site'"
 ```bash
 composer install
 composer lint
+composer phpstan
 wp core install --url=https://example.com --title="My Site" ...
 wp theme activate canopy --allow-root
 ```
@@ -482,7 +486,7 @@ Create template: `views/templates/single-portfolio.twig`
 In `Site.php`:
 
 ```php
-public function addFiltersToTwig($filters)
+public function addFiltersToTwig(array $filters): array
 {
     $filters['uppercase'] = [
         'callable' => fn($text) => strtoupper($text),
@@ -499,7 +503,7 @@ Use in Twig:
 ### Adding a Twig Function
 
 ```php
-public function addFunctionsToTwig($functions)
+public function addFunctionsToTwig(array $functions): array
 {
     $functions['get_related_posts'] = [
         'callable' => function($post_id, $limit = 3) {
@@ -519,6 +523,20 @@ Use in Twig:
   <a href="{{ related.link }}">{{ related.title }}</a>
 {% endfor %}
 ```
+
+### Adding a Must-Use Plugin (mu-plugin)
+
+Bedrock v2 installs mu-plugins as **directories** via `type:wordpress-muplugin`. Each Composer-managed directory must be added to `.gitignore` manually — the pattern only ignores what's explicitly listed.
+
+```bash
+# Install via Composer
+make composer require roots/some-mu-plugin
+
+# Add to .gitignore to prevent tracking the Composer-managed directory
+echo "/web/app/mu-plugins/some-mu-plugin/" >> .gitignore
+```
+
+Custom mu-plugins you write manually (files or folders) should be committed to git normally — only Composer-managed ones are ignored. If a custom plugin is not committed, `git reset --hard` on deploy will delete it.
 
 ### Adding a Plugin
 
@@ -597,6 +615,12 @@ CF_API_TOKEN        → Cloudflare API token (cache_purge permission)
 
 ### Workflows
 
+**`ci.yml`** (runs on push/PR to `main`):
+1. Setup PHP 8.5
+2. `composer install`
+3. `composer lint` (Pint PSR-12)
+4. `composer phpstan` (level 5)
+
 **`deploy-production.yml`** (runs on `push` to `main`):
 1. SSH to production
 2. `git reset --hard origin/main`
@@ -628,13 +652,21 @@ wp eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
 
 ## Troubleshooting
 
+### PHPStan: "Cannot redeclare function" fatal
+
+If PHPStan crashes with a fatal about `wp_hash_password()` or another WP function being redeclared, a plugin is redefining a core function that `wordpress-stubs` also declares. Fix: remove the conflicting package (e.g. `roots/wp-password-bcrypt` was removed because WordPress 6.8+ ships native bcrypt). Do not switch `includes: extension.neon` to `scanFiles` as a workaround — remove the root cause instead.
+
+### "Warning: Constant WP_CACHE already defined"
+
+LiteSpeed Cache injects `define('WP_CACHE', true)` at the top of `web/wp-config.php` on plugin activation. The environment files use `defined('WP_CACHE') || define(...)` guards to avoid redefinition. If the warning appears, verify `web/wp-config.php` has the guard at the top and the environment file uses `defined() ||`. A bare `define()` in either file will trigger the warning on PHP 8 and a fatal on PHP 9.
+
 ### PHP 8.5: Opcache is built-in
 
 On PHP 8.5, opcache is compiled statically into core. Do NOT add it to `docker-php-ext-install` or `docker-php-ext-enable` — it will fail with `'opcache' does not exist`.
 
 ### PHP 8.5: WP-CLI deprecation warnings
 
-WP-CLI 2.12 shows `Creation of dynamic property` deprecation notices on PHP 8.5. These are cosmetic — WP-CLI functions correctly. These will be resolved in a future WP-CLI release.
+WP-CLI shows deprecation notices on PHP 8.5 (`Creation of dynamic property`, `Case statements followed by a semicolon`, `Using null as an array offset`). These come from WP-CLI's own vendor packages — cosmetic only, WP-CLI functions correctly. They will be resolved in a future WP-CLI release.
 
 ### "Class Env\Env not found" in browser
 

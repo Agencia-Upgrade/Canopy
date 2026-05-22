@@ -28,4 +28,4 @@ Config::define('DISALLOW_FILE_MODS', false);
 define('LITESPEED_CONF', 1);
 define('LITESPEED_CONF__CACHE__ENABLE', 0);
 define('LITESPEED_CONF__BROWSER__ENABLE', 0);
-define('WP_CACHE', false);
+defined('WP_CACHE') || define('WP_CACHE', false);

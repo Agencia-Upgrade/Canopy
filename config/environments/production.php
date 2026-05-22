@@ -15,7 +15,7 @@
  * Reference: https://docs.litespeedtech.com/lscache/lscwp/constants/
  */
 define('LITESPEED_CONF', 1);
-define('WP_CACHE', true);
+defined('WP_CACHE') || define('WP_CACHE', true);
 
 // Page cache
 define('LITESPEED_CONF__CACHE__ENABLE', 1);

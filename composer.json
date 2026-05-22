@@ -41,16 +41,17 @@
     "oscarotero/env": "^2.1",
     "roots/bedrock-autoloader": "^1.0",
     "roots/bedrock-disallow-indexing": "^2.0",
-    "roots/wordpress": "^6.9",
+    "roots/wordpress": "^7.0",
     "roots/wp-config": "^1.0",
-    "roots/wp-password-bcrypt": "^1.1",
     "timber/timber": "^2.1",
     "vlucas/phpdotenv": "^5.5",
     "wp-plugin/litespeed-cache": "*"
   },
   "require-dev": {
     "laravel/pint": "^1.27",
-    "roave/security-advisories": "dev-latest"
+    "phpstan/phpstan": "^2.1",
+    "roave/security-advisories": "dev-latest",
+    "szepeviktor/phpstan-wordpress": "^2.0"
   },
   "config": {
     "optimize-autoloader": true,
@@ -80,13 +81,11 @@
   "autoload": {
     "psr-4": {
       "Canopy\\": "web/app/themes/canopy/src/"
-    },
-    "classmap": [
-      "web/app/themes/canopy/src/"
-    ]
+    }
   },
   "scripts": {
     "lint": "pint --test",
-    "lint:fix": "pint"
+    "lint:fix": "pint",
+    "phpstan": "phpstan analyse --memory-limit=512M"
   }
 }

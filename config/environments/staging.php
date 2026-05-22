@@ -11,7 +11,7 @@
  * Staging mirrors production but with indexing disabled.
  */
 define('LITESPEED_CONF', 1);
-define('WP_CACHE', true);
+defined('WP_CACHE') || define('WP_CACHE', true);
 
 define('LITESPEED_CONF__CACHE__ENABLE', 1);
 define('LITESPEED_CONF__CACHE__TTL_PUB', 604800);
