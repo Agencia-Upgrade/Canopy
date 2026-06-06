@@ -1,0 +1,13 @@
+{#
+  Component: reveal
+  Wraps content in a scroll-reveal island. The JS (and Motion) loads on demand
+  only when this component is on the page and scrolled into view.
+
+  Usage:
+    {% include 'components/reveal.twig' with { content: '<p>Hi</p>' } %}
+  or wrap a block:
+    {% embed 'components/reveal.twig' %}{% block reveal %}…{% endblock %}{% endembed %}
+#}
+<div data-island="reveal" class="cnp-reveal">
+	{% block reveal %}{{ content|raw }}{% endblock %}
+</div>

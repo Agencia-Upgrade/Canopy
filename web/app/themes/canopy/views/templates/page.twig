@@ -9,6 +9,7 @@
 		</header>
 
 		<div class="cnp-page__content">
+			{# post.content is sanitized by WordPress; raw keeps the HTML markup. Do not use raw on unfiltered input. #}
 			{{ post.content|raw }}
 		</div>
 	</article>

@@ -57,7 +57,7 @@
     --cnp-color-primary-dark: #004399;
     --cnp-color-secondary: #ff6600;
     --cnp-color-text: #333;
-    --cnp-color-text-light: #666;
+    --cnp-color-text-light: #595959; /* 7:1 contrast on white (WCAG AAA) */
     --cnp-color-border: #ddd;
     --cnp-color-background: #fff;
     --cnp-color-background-alt: #f9f9f9;
@@ -147,6 +147,15 @@
 
   a:hover {
     color: var(--cnp-color-primary-dark);
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid var(--cnp-color-primary);
+    outline-offset: 2px;
   }
 }
 
@@ -385,6 +394,53 @@
   .cnp-footer__credit a {
     color: var(--cnp-color-primary);
   }
+
+  /* Reveal island wrapper — content stays visible without JS (progressive enhancement) */
+  .cnp-reveal {
+    will-change: opacity, transform;
+  }
+
+  /* Pagination */
+  .cnp-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--cnp-space-8);
+    margin-top: var(--cnp-space-48);
+  }
+
+  .cnp-pagination__list {
+    display: flex;
+    align-items: center;
+    gap: var(--cnp-space-4);
+    list-style: none;
+  }
+
+  .cnp-pagination__link {
+    display: inline-block;
+    padding: var(--cnp-space-8) var(--cnp-space-12);
+    border: 1px solid var(--cnp-color-border);
+    border-radius: 4px;
+    transition: background-color var(--cnp-transition-fast), color var(--cnp-transition-fast);
+  }
+
+  a.cnp-pagination__link:hover {
+    background-color: var(--cnp-color-background-alt);
+    color: var(--cnp-color-primary);
+  }
+
+  .cnp-pagination__link.current {
+    background-color: var(--cnp-color-primary);
+    border-color: var(--cnp-color-primary);
+    color: #fff;
+  }
+
+  .cnp-pagination__prev,
+  .cnp-pagination__next {
+    color: var(--cnp-color-primary);
+    font-weight: var(--cnp-font-weight-medium);
+  }
 }
 
 /* =============================================================================
@@ -401,6 +457,22 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+  }
+
+  /* Skip link — hidden until focused via keyboard */
+  .cnp-skip-link {
+    position: absolute;
+    left: var(--cnp-space-8);
+    top: -100%;
+    z-index: var(--cnp-z-modal);
+    padding: var(--cnp-space-8) var(--cnp-space-16);
+    background-color: var(--cnp-color-primary);
+    color: #fff;
+    border-radius: 4px;
+  }
+
+  .cnp-skip-link:focus {
+    top: var(--cnp-space-8);
   }
 
   @media (prefers-reduced-motion: reduce) {

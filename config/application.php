@@ -158,6 +158,10 @@ ini_set('display_errors', '0');
 
 /**
  * Redis Object Cache
+ *
+ * Set WP_REDIS_HOST in .env to match your environment — in Docker it is the
+ * compose service name ('redis', as in .env.example); the 'localhost' fallback
+ * suits a server where Redis runs alongside the app.
  */
 Config::define('WP_REDIS_HOST', env('WP_REDIS_HOST') ?: 'localhost');
 Config::define('WP_REDIS_PORT', env('WP_REDIS_PORT') ?: 6379);

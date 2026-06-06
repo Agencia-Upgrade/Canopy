@@ -67,6 +67,8 @@ class Site extends TimberSite
             'primary_navigation' => __('Primary Navigation', 'canopy'),
             'footer_navigation'  => __('Footer Navigation', 'canopy'),
         ]);
+
+        load_theme_textdomain('canopy', get_template_directory() . '/languages');
     }
 
     /**
@@ -93,63 +95,31 @@ class Site extends TimberSite
 
     /**
      * Enqueue theme styles and scripts
+     *
+     * Assets are served as source files. The web server / LiteSpeed Cache
+     * handles compression and browser caching in production. filemtime()
+     * provides cache-busting on every change.
      */
     public function enqueueAssets(): void
     {
         $dir = get_template_directory();
         $uri = get_template_directory_uri();
 
-        // In production (WP_DEBUG=false), load minified assets
-        $isDev    = defined('WP_DEBUG') && WP_DEBUG;
-        $cssFile  = $isDev ? 'assets/styles/main.css' : 'assets/styles/main.min.css';
-        $jsFile   = $isDev ? 'assets/scripts/site.js' : 'assets/scripts/site.min.js';
-
         // Main stylesheet (includes @font-face for local fonts)
         wp_enqueue_style(
             'canopy-main',
-            $uri . '/' . $cssFile,
+            $uri . '/assets/styles/main.css',
             [],
-            filemtime($dir . '/' . $cssFile)
+            filemtime($dir . '/assets/styles/main.css')
         );
 
-        // GSAP 3 — CDN (jsDelivr), deferred
-        $gsapVersion = '3.12.5';
-        $gsapCdn     = "https://cdn.jsdelivr.net/npm/gsap@{$gsapVersion}/dist";
-
-        wp_enqueue_script(
-            'gsap',
-            "{$gsapCdn}/gsap.min.js",
-            [],
-            $gsapVersion,
-            ['strategy' => 'defer', 'in_footer' => true]
-        );
-
-        // GSAP plugins — each depends on 'gsap' so load order is guaranteed
-        $gsapPlugins = [
-            'gsap-scrolltrigger'   => 'ScrollTrigger.min.js',
-            'gsap-scrollto'        => 'ScrollToPlugin.min.js',
-            'gsap-observer'        => 'Observer.min.js',
-            'gsap-draggable'       => 'Draggable.min.js',
-            'gsap-flip'            => 'Flip.min.js',
-            'gsap-motionpath'      => 'MotionPathPlugin.min.js',
-            'gsap-easepack'        => 'EasePack.min.js',
-            'gsap-customease'      => 'CustomEase.min.js',
-            'gsap-textplugin'      => 'TextPlugin.min.js',
-        ];
-
-        foreach ($gsapPlugins as $handle => $file) {
-            wp_enqueue_script($handle, "{$gsapCdn}/{$file}", ['gsap'], $gsapVersion, ['strategy' => 'defer', 'in_footer' => true]);
-        }
-
-        // Theme JS — depends on all GSAP plugins
-        $siteDeps = array_merge(['gsap'], array_keys($gsapPlugins));
-
-        wp_enqueue_script(
+        // Theme JS is an ES module so it can import Motion (motion.dev) directly.
+        // Registered as a script module (WordPress 6.5+) — loaded with type="module".
+        wp_enqueue_script_module(
             'canopy-site',
-            $uri . '/' . $jsFile,
-            $siteDeps,
-            filemtime($dir . '/' . $jsFile),
-            ['strategy' => 'defer', 'in_footer' => true]
+            $uri . '/assets/scripts/site.js',
+            [],
+            filemtime($dir . '/assets/scripts/site.js')
         );
     }
 
@@ -193,6 +163,11 @@ class Site extends TimberSite
     {
         $context['menu'] = Timber::get_menu('primary_navigation');
         $context['footer_menu'] = Timber::get_menu('footer_navigation');
+
+        // Values WordPress exposes through functions, made available to Twig.
+        $context['body_class'] = implode(' ', get_body_class());
+        $context['archive_title'] = get_the_archive_title();
+        $context['search_query'] = get_search_query();
 
         return $context;
     }
@@ -260,7 +235,7 @@ class Site extends TimberSite
         $home = parse_url(home_url());
         $path = !empty($home['path']) ? $home['path'] : '';
 
-        if ('localhost' !== $host && !strpos($host, '.test') && !strpos($host, '.local')) {
+        if ('localhost' !== $host && strpos($host, '.test') === false && strpos($host, '.local') === false) {
             $output .= "\n\nSitemap: {$home['scheme']}://{$host}{$path}/sitemap.xml\n";
         }
 
@@ -274,6 +249,8 @@ class Site extends TimberSite
     {
         $host = parse_url(home_url(), PHP_URL_HOST);
 
+        // getenv() reads the live process environment, so SMTP credentials work
+        // whether they come from .env or are injected by the host (panel, Docker, systemd).
         return getenv('SMTP_FROM') ?: "noreply@{$host}";
     }
 
@@ -292,6 +269,7 @@ class Site extends TimberSite
      */
     public function configureSMTP(\PHPMailer\PHPMailer\PHPMailer $phpmailer): void
     {
+        // getenv() so credentials injected outside .env (host panel, Docker, systemd) are honored.
         if (!getenv('SMTP_HOST')) {
             return;
         }
