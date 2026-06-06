@@ -39,6 +39,7 @@ auth.json
 # Claude Code
 /skills-lock.json
 /.claude/
+/.agents/
 
 # OS / editors
 .DS_Store
@@ -47,4 +48,3 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
-/base/

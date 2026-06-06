@@ -1,0 +1,25 @@
+{# Pagination — renders Timber's posts.pagination object #}
+
+{% if posts.pagination.pages is not empty %}
+	<nav class="cnp-pagination" aria-label="Posts navigation">
+		{% if posts.pagination.prev %}
+			<a href="{{ posts.pagination.prev.link }}" class="cnp-pagination__prev" rel="prev">← Previous</a>
+		{% endif %}
+
+		<ul class="cnp-pagination__list">
+			{% for page in posts.pagination.pages %}
+				<li class="cnp-pagination__item">
+					{% if page.link %}
+						<a href="{{ page.link }}" class="cnp-pagination__link {{ page.class }}">{{ page.title }}</a>
+					{% else %}
+						<span class="cnp-pagination__link {{ page.class }}" aria-current="page">{{ page.title }}</span>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+
+		{% if posts.pagination.next %}
+			<a href="{{ posts.pagination.next.link }}" class="cnp-pagination__next" rel="next">Next →</a>
+		{% endif %}
+	</nav>
+{% endif %}

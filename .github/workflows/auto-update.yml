@@ -6,6 +6,10 @@ on:
     - cron: '0 7 * * 1'  # Monday 07:00 UTC
   workflow_dispatch:
 
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   update:
     name: Update dependencies
@@ -60,7 +64,7 @@ jobs:
 
       - name: Auto-deploy if changed
         if: hashFiles('composer.lock') != '' && steps.wp-check.outputs.major != 'true'
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           port: ${{ secrets.PROD_SSH_PORT }}
@@ -74,6 +78,7 @@ jobs:
             cd "$BEDROCK"
             git pull origin main
             composer install --no-dev --optimize-autoloader
+            $WP rewrite flush --allow-root
             $WP cache flush --allow-root
             $WP eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
             echo "✓ Auto-deploy completed"

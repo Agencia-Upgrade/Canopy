@@ -10,10 +10,10 @@
 Canopy is a production-ready WordPress boilerplate that combines Bedrock's infrastructure-first structure with Timber's clean templating approach. It's built from real-world patterns used across Agência Upgrade's client projects.
 
 **Key decisions:**
-- WordPress as a Composer dependency (not manually installed)
-- Timber/Twig for template separation (not Sage/Blade)
+- WordPress managed as a Composer dependency
+- Timber/Twig for clean template separation
 - No build step for assets (CSS/JS committed directly)
-- Laravel Pint for PSR-12 formatting (not PHPCS)
+- Laravel Pint for PSR-12 formatting
 - LiteSpeed Cache for production caching
 - GitHub Actions for deployment and auto-updates
 
@@ -38,15 +38,16 @@ Canopy is a production-ready WordPress boilerplate that combines Bedrock's infra
 
 ### 1. Create a new project from Canopy
 
-**Automated (recommended):**
+**Local (Docker) — recommended:**
 
 ```bash
 git clone https://github.com/Agencia-Upgrade/canopy.git my-project
 cd my-project
-bash start.sh
+make setup
 ```
 
-The script renames the theme, replaces namespaces/CSS prefixes, generates `.env`, and resets Git history. Choose **Local (Docker)** for development.
+`make setup` creates `.env`, generates salts, builds the containers, installs
+WordPress, and activates the theme. Access http://localhost:8080.
 
 **Manual:**
 
@@ -167,8 +168,7 @@ canopy/
 ├── phpstan.neon              ← PHPStan static analysis config (level 5)
 ├── pint.json                 ← Laravel Pint PSR-12 config
 ├── wp-cli.yml                ← WP-CLI configuration (path, docroot)
-├── Makefile                  ← Docker shortcuts (make up/down/wp/bash/rebuild)
-├── start.sh                  ← Project scaffolding (rename theme, generate .env)
+├── Makefile                  ← Docker shortcuts (make setup/up/down/wp/bash/rebuild)
 ├── CLAUDE.md                 ← This file
 ├── README.md                 ← Public documentation
 │
@@ -220,11 +220,10 @@ canopy/
 │   │           │       └── index.twig     ← Fallback
 │   │           ├── assets/
 │   │           │   ├── styles/
-│   │           │   │   ├── main.css       ← Source CSS (token-first, BEM)
-│   │           │   │   └── main.min.css   ← Production (optional, manual minification)
+│   │           │   │   └── main.css       ← Stylesheet (token-first, BEM)
 │   │           │   ├── scripts/
-│   │           │   │   ├── site.js        ← Source JS
-│   │           │   │   └── site.min.js    ← Production (optional)
+│   │           │   │   ├── site.js        ← Island loader (lazy per-component JS)
+│   │           │   │   └── islands/       ← Per-component modules (import Motion, etc.)
 │   │           │   ├── fonts/             ← Self-hosted fonts
 │   │           │   └── images/            ← Theme images
 │   │           ├── cache/                 ← Twig cache (generated, .gitignored)
@@ -260,7 +259,7 @@ class Site extends TimberSite {
 
   public function themeSupports(): void { /* theme supports */ }
   public function registerPostTypes(): void { /* CPTs */ }
-  public function enqueueAssets(): void { /* CSS + JS + GSAP */ }
+  public function enqueueAssets(): void { /* CSS + JS module */ }
   public function addToContext(array $context): array { /* Twig global data */ }
   // ... more methods
 }
@@ -270,7 +269,7 @@ class Site extends TimberSite {
 - Theme feature support (title-tag, post-thumbnails, menus, HTML5)
 - Custom post type registration
 - Custom taxonomy registration
-- Asset enqueue (CSS, JS, GSAP plugins)
+- Asset enqueue (CSS, JS module)
 - Twig context (menus, global data)
 - Twig filters and functions
 - Cache configuration
@@ -357,33 +356,41 @@ Uses `@layer` for organization:
 - **Naming:** BEM (Block__Element--Modifier)
 - **Font size:** `1rem = 10px` (set via `html { font-size: 62.5%; }`)
 - **Spacing:** Tokens like `--cnp-space-16` for consistency
-- **No preprocessor:** Vanilla CSS only (no Sass, PostCSS)
+- **No preprocessor:** Plain CSS, no build step
 
-**Production:** Minify to `main.min.css` (optional; committed to Git)
+**Production:** Served as-is; the web server / LiteSpeed Cache handles minification and compression.
 
-### JavaScript — Vanilla + GSAP
+### JavaScript — islands, loaded on demand
 
-**File: `assets/scripts/site.js`**
+JavaScript is split into **islands**: small per-component modules that load only
+when their markup is on the page, and only once it scrolls into view. There is no
+build step — `site.js` is an ES module enqueued with `wp_enqueue_script_module()`,
+and islands are loaded with native dynamic `import()`. Heavy dependencies (e.g.
+Motion) live inside an island, so a page that doesn't use them never downloads them.
 
-Loaded deferred in footer via `wp_enqueue_script()`:
-
-```javascript
-document.addEventListener('DOMContentLoaded', function () {
-  // Respect prefers-reduced-motion
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (!prefersReducedMotion) {
-    // GSAP animations here
-    // gsap.to('.element', { duration: 1, opacity: 1 });
-  }
-});
+```
+assets/scripts/
+├── site.js              ← island loader (scans data-island, lazy-imports modules)
+└── islands/
+    └── reveal.js        ← example island: imports Motion, animates on view
 ```
 
-**GSAP via CDN:** Loaded from jsDelivr, not npm:
-- `gsap.min.js` + 9 free plugins (ScrollTrigger, Flip, etc.)
-- Always include `prefers-reduced-motion` check
+**How it works:**
+- Markup opts in: `<div data-island="reveal"> … </div>`.
+- `site.js` registers each island name → dynamic import, observes it with
+  `IntersectionObserver`, and hydrates when it nears the viewport.
+- Add `data-island-eager` to hydrate immediately instead of on scroll.
+- The island's default export receives the element: `export default (el) => { … }`.
 
-**Production:** Minify to `site.min.js` (optional; committed to Git)
+**Adding an island:**
+1. Create `assets/scripts/islands/<name>.js` with a default export.
+2. Register it in `site.js`: `<name>: () => import('./islands/<name>.js'),`.
+3. Add `data-island="<name>"` to the component markup (see
+   `views/components/reveal.twig`).
+
+**Motion** ([motion.dev](https://motion.dev)) is imported inside an island from
+jsDelivr (pin the version in the URL). Always keep the `prefers-reduced-motion`
+check before animating.
 
 ---
 
@@ -575,7 +582,7 @@ docker compose exec php wp --allow-root plugin activate yoast-seo
 ### JavaScript
 
 - **Vanilla JS** (no jQuery)
-- **GSAP for animations** (via CDN, with `prefers-reduced-motion` check)
+- **Motion for animations** (ES module via CDN, with `prefers-reduced-motion` check)
 - **Defer/async loading** for non-critical scripts
 - **No transpilation** (ES6+, but runs natively)
 
@@ -685,7 +692,7 @@ require_once dirname(__DIR__) . '/config/application.php';
 require_once ABSPATH . 'wp-settings.php';
 ```
 
-If `index.php` tries to load `config/application.php` directly (old Bedrock format), autoload won't be loaded and the `Env\Env` class won't be available.
+If `index.php` loads `config/application.php` directly instead of going through `wp-config.php`, autoload won't be loaded and the `Env\Env` class won't be available.
 
 ### WP-CLI: "Strange wp-config.php" error
 
@@ -732,7 +739,7 @@ DB_PASSWORD=dev
 DB_HOST=db
 ```
 
-If you used `start.sh`, it syncs these automatically. If you set up manually, ensure both files match.
+`.env.example` already ships with these Docker values, and `make setup` copies it for you. If you set up manually, ensure `.env` and `docker-compose.yml` match.
 
 ### Docker: cached layers after Dockerfile changes
 

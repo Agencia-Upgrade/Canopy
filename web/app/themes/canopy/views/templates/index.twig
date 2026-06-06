@@ -4,7 +4,7 @@
 
 {% block content %}
 	<div class="cnp-index">
-		<h1 class="cnp-index__title">{{ wp_title }}</h1>
+		<h1 class="cnp-index__title">{{ archive_title|default('Blog') }}</h1>
 
 		{% if posts %}
 			<div class="cnp-index__list">
@@ -17,6 +17,8 @@
 					</article>
 				{% endfor %}
 			</div>
+
+			{% include 'partials/pagination.twig' %}
 		{% endif %}
 	</div>
 {% endblock %}

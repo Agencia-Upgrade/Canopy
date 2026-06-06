@@ -45,7 +45,7 @@
     "roots/wp-config": "^1.0",
     "timber/timber": "^2.1",
     "vlucas/phpdotenv": "^5.5",
-    "wp-plugin/litespeed-cache": "*"
+    "wp-plugin/litespeed-cache": "^7.8"
   },
   "require-dev": {
     "laravel/pint": "^1.27",
@@ -56,6 +56,9 @@
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
+    "platform": {
+      "php": "8.5"
+    },
     "allow-plugins": {
       "composer/installers": true,
       "roots/wordpress-core-installer": true

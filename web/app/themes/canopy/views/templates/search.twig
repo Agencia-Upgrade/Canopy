@@ -5,7 +5,7 @@
 {% block content %}
 	<div class="cnp-search">
 		<header class="cnp-search__header">
-			<h1 class="cnp-search__title">Search Results for "{{ wp_query.get('s') }}"</h1>
+			<h1 class="cnp-search__title">Search Results for "{{ search_query }}"</h1>
 		</header>
 
 		{% if posts %}
@@ -19,6 +19,8 @@
 					</article>
 				{% endfor %}
 			</div>
+
+			{% include 'partials/pagination.twig' %}
 		{% else %}
 			<p class="cnp-search__no-results">No results found.</p>
 		{% endif %}

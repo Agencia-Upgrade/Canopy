@@ -36,39 +36,21 @@
 - Docker (for local development) or web hosting
 - MySQL 8.0+ or MariaDB 11+
 
-### Option A: Automated Setup (Recommended)
+### One-command local setup (Recommended)
 
-The `start.sh` script renames the theme, replaces namespaces/prefixes, generates `.env`, and resets Git history:
+From a fresh clone, this creates `.env`, generates salts, builds the containers,
+installs WordPress, and activates the theme:
 
 ```bash
 git clone https://github.com/Agencia-Upgrade/canopy.git my-site
 cd my-site
-bash start.sh
+make setup
+# Access: http://localhost:8080 — Admin: http://localhost:8080/wp/wp-admin (admin/admin)
 ```
 
-Follow the prompts — choose **Local (Docker)** for development. Then:
+### Manual setup
 
-```bash
-make rebuild
-make composer install
-```
-
-Install WordPress:
-
-```bash
-docker compose exec php wp --allow-root core install \
-  --url=http://localhost \
-  --title="My Site" \
-  --admin_user=admin \
-  --admin_password=password \
-  --admin_email=admin@example.com
-
-docker compose exec php wp --allow-root theme activate my-site
-```
-
-Open http://localhost in your browser.
-
-### Option B: Manual Setup
+If you prefer control over each step:
 
 ```bash
 git clone https://github.com/Agencia-Upgrade/canopy.git my-site
@@ -194,8 +176,7 @@ Canopy/
 │   │           └── cache/    # Twig cache (generated)
 ├── .docker/                   # Docker config (Dockerfile, nginx, php.ini)
 ├── docker-compose.yml         # Local dev stack (nginx, php, mariadb, mailpit)
-├── Makefile                   # Docker shortcuts (make up, make wp, etc.)
-├── start.sh                   # Project scaffolding script
+├── Makefile                   # Docker shortcuts (make setup, make up, make wp, etc.)
 ├── .env                       # Environment config (not versioned)
 ├── .env.example              # Environment template
 ├── composer.json
@@ -273,13 +254,13 @@ public function customizeRegister($customize): void
 
 Configure these secrets in your repository:
 
-- `PROD_HOST` — Production server hostname
-- `PROD_USER` — SSH user
+- `PROD_SSH_HOST` — Production server hostname
+- `PROD_SSH_USER` — SSH user
 - `PROD_SSH_KEY` — SSH private key
-- `PROD_PATH` — Project path on server (e.g., `/home/user/public_html`)
+- `PROD_SSH_PORT` — SSH port (usually 22)
+- `PROD_WP_PATH` — Project path on server (e.g., `/home/user/public_html`)
 - `CF_ZONE_ID` — Cloudflare Zone ID (for cache purge)
-- `CF_EMAIL` — Cloudflare account email
-- `CF_API_KEY` — Cloudflare API key
+- `CF_API_TOKEN` — Cloudflare API token (cache_purge permission)
 
 ### Manual Deployment
 
@@ -293,27 +274,23 @@ wp cache flush
 wp eval 'Timber\Cache\Cleaner::clear_cache_timber();'
 ```
 
-## Asset Minification
+## Assets
 
-The theme automatically loads minified assets in production:
-- Development: `main.css` / `site.js`
-- Production: `main.min.css` / `site.min.js`
+No build step. `main.css` and `site.js` are committed and served as-is; the web
+server / LiteSpeed Cache handles minification, compression, and browser caching
+in production.
 
-To minify, use any tool (e.g., css-minify, uglify-js):
-
-```bash
-# Example with csso-cli
-npm install -g csso-cli
-csso assets/styles/main.css -o assets/styles/main.min.css
-```
-
-Or commit pre-minified files to Git.
+JavaScript is split into **islands** — small per-component modules under
+`assets/scripts/islands/` that load on demand via native dynamic `import()`, only
+when their markup (`data-island="…"`) is on the page and scrolled into view.
+Animations use Motion ([motion.dev](https://motion.dev)), imported inside the
+island that needs it, so it never loads on pages that don't.
 
 ## Standards
 
 - **PHP** — 8.5+, PSR-12 (Laravel Pint), PSR-4 namespacing
 - **CSS** — Token-first, BEM naming (`cnp-*` prefix), `@layer` for organization
-- **JS** — Vanilla JS, GSAP for animations, defer/async loading
+- **JS** — ES module islands (lazy per-component), Motion for animations
 - **HTML** — Semantic HTML5, ARIA where needed
 - **Performance** — Lighthouse ≥ 95, LiteSpeed Cache
 - **Accessibility** — WCAG 2.2 AA, `prefers-reduced-motion` respected

@@ -6,6 +6,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,14 +17,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy to production
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.5
         with:
-          host: ${{ secrets.PROD_HOST }}
-          username: ${{ secrets.PROD_USER }}
+          host: ${{ secrets.PROD_SSH_HOST }}
+          port: ${{ secrets.PROD_SSH_PORT }}
+          username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             set -e
-            cd ${{ secrets.PROD_PATH }}
+            BEDROCK="${{ secrets.PROD_WP_PATH }}"
+            WP="wp --path=$BEDROCK/web/wp"
+
+            cd "$BEDROCK"
 
             echo "→ Pulling latest code..."
             git fetch origin
@@ -30,16 +38,15 @@ jobs:
             composer install --no-dev --optimize-autoloader --no-interaction --quiet
 
             echo "→ Flushing rewrite rules..."
-            wp rewrite flush --allow-root --quiet
+            $WP rewrite flush --allow-root --quiet
 
             echo "→ Clearing caches..."
-            wp cache flush --allow-root --quiet
-            wp eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root --quiet
+            $WP cache flush --allow-root --quiet
+            $WP eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root --quiet
 
             echo "→ Purging Cloudflare cache..."
             curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
-              -H "X-Auth-Email: ${{ secrets.CF_EMAIL }}" \
-              -H "X-Auth-Key: ${{ secrets.CF_API_KEY }}" \
+              -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
               -H "Content-Type: application/json" \
               --data '{"purge_everything":true}'
 

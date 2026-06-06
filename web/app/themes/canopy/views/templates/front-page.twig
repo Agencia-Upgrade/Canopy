@@ -12,7 +12,13 @@
 
 	{% if post.content %}
 		<div class="cnp-container">
-			{{ post.content|raw }}
+			{# Example island: the reveal component loads its JS (and Motion) on demand. #}
+			{% embed 'components/reveal.twig' %}
+				{% block reveal %}
+					{# post.content is sanitized by WordPress; raw keeps the HTML markup. Do not use raw on unfiltered input. #}
+					{{ post.content|raw }}
+				{% endblock %}
+			{% endembed %}
 		</div>
 	{% endif %}
 {% endblock %}
