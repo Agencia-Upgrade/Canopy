@@ -78,7 +78,8 @@ jobs:
             cd "$BEDROCK"
             git pull origin main
             composer install --no-dev --optimize-autoloader
-            $WP rewrite flush --allow-root
-            $WP cache flush --allow-root
-            $WP eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
+            $WP rewrite flush --allow-root --quiet
+            $WP cache flush --allow-root --quiet
+            $WP eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root --quiet
+            $WP eval 'Timber\Cache\Cleaner::clear_cache_twig();' --allow-root --quiet
             echo "✓ Auto-deploy completed"

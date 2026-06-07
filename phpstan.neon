@@ -7,6 +7,14 @@ parameters:
     tmpDir: tmp/phpstan
     paths:
         - web/app/themes/canopy/src
+        - web/app/themes/canopy/functions.php
+        - web/app/themes/canopy/index.php
+        - web/app/themes/canopy/front-page.php
+        - web/app/themes/canopy/page.php
+        - web/app/themes/canopy/single.php
+        - web/app/themes/canopy/archive.php
+        - web/app/themes/canopy/search.php
+        - web/app/themes/canopy/404.php
     excludePaths:
         - vendor
         - web/wp

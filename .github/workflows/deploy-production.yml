@@ -43,11 +43,18 @@ jobs:
             echo "→ Clearing caches..."
             $WP cache flush --allow-root --quiet
             $WP eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root --quiet
+            $WP eval 'Timber\Cache\Cleaner::clear_cache_twig();' --allow-root --quiet
 
             echo "→ Purging Cloudflare cache..."
-            curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
-              -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              --data '{"purge_everything":true}'
+            if [ -n "${{ secrets.CF_ZONE_ID }}" ] && [ -n "${{ secrets.CF_API_TOKEN }}" ]; then
+              curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+                -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+                -H "Content-Type: application/json" \
+                --data '{"purge_everything":true}' | grep -q '"success":true' \
+                && echo "  Cloudflare cache purged" \
+                || { echo "  Cloudflare purge failed"; exit 1; }
+            else
+              echo "  Skipped — CF_ZONE_ID / CF_API_TOKEN not set"
+            fi
 
             echo "✓ Deployment complete"

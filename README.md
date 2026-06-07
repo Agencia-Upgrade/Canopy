@@ -25,7 +25,7 @@
 - **Zero Build Step** — CSS and JS committed directly; optional minification
 - **GitHub Actions** — Automated deployment and weekly dependency updates
 - **Cloudflare-Ready** — DNS, CDN, and image transformation integration
-- **Accessibility & Performance** — WCAG 2.2 AA, Lighthouse ≥ 95, Schema.org
+- **Accessibility & Performance** — WCAG 2.2 AA, Lighthouse ≥ 95 targets
 
 ## Quick Start
 
@@ -286,7 +286,8 @@ island that needs it, so it never loads on pages that don't.
 - **HTML** — Semantic HTML5, ARIA where needed
 - **Performance** — Lighthouse ≥ 95, LiteSpeed Cache
 - **Accessibility** — WCAG 2.2 AA, `prefers-reduced-motion` respected
-- **SEO** — Schema.org markup, XML sitemap, robots.txt, Open Graph tags
+- **SEO** — dynamic `robots.txt`, `noindex` on search/404/paged; clean semantic
+  markup ready for an SEO plugin (Schema.org, sitemaps, Open Graph) per project
 
 ## Troubleshooting
 

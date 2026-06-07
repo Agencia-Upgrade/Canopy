@@ -7,6 +7,13 @@
  * @author     Agência Upgrade <contato@agenciaupgrade.com.br>
  */
 
+use Roots\WPConfig\Config;
+
+use function Env\env;
+
+// Disable loopback cron (mirror production); run a real cron job instead.
+Config::define('DISABLE_WP_CRON', env('DISABLE_WP_CRON') ?? true);
+
 /**
  * Staging mirrors production but with indexing disabled.
  *

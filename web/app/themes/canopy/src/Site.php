@@ -63,12 +63,12 @@ class Site extends TimberSite
             'script',
         ]);
 
+        load_theme_textdomain('canopy', get_template_directory() . '/languages');
+
         register_nav_menus([
             'primary_navigation' => __('Primary Navigation', 'canopy'),
             'footer_navigation'  => __('Footer Navigation', 'canopy'),
         ]);
-
-        load_theme_textdomain('canopy', get_template_directory() . '/languages');
     }
 
     /**
@@ -283,12 +283,20 @@ class Site extends TimberSite
             return;
         }
 
+        $user = getenv('SMTP_USER');
+        $pass = getenv('SMTP_PASS');
+
         $phpmailer->isSMTP();
-        $phpmailer->Host       = getenv('SMTP_HOST');
-        $phpmailer->Port       = getenv('SMTP_PORT') ?: 587;
-        $phpmailer->SMTPAuth   = true;
-        $phpmailer->Username   = getenv('SMTP_USER');
-        $phpmailer->Password   = getenv('SMTP_PASS');
+        $phpmailer->Host       = (string) getenv('SMTP_HOST');
+        $phpmailer->Port       = (int) (getenv('SMTP_PORT') ?: 587);
         $phpmailer->SMTPSecure = getenv('SMTP_ENCRYPTION') ?: 'tls';
+
+        // Authenticate only when both credentials are present; some relays
+        // authenticate by IP and need no username/password.
+        if ($user && $pass) {
+            $phpmailer->SMTPAuth = true;
+            $phpmailer->Username = (string) $user;
+            $phpmailer->Password = (string) $pass;
+        }
     }
 }
