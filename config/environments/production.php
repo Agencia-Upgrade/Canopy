@@ -8,30 +8,38 @@
  */
 
 /**
- * LiteSpeed Cache — file-first configuration
+ * LiteSpeed Cache — file-first configuration, applied only on LiteSpeed servers
  *
- * Constants override any value saved to the database by the plugin.
- * LITESPEED_CONF must be defined before any LITESPEED_CONF__* constants.
+ * The litespeed-cache plugin is optional (see composer.json `suggest`). Its
+ * page cache only works when the host runs LiteSpeed/OpenLiteSpeed, so the
+ * constants below are defined only when SERVER_SOFTWARE reports LiteSpeed.
+ * On nginx/Apache, page and browser caching are left to the web server and
+ * the CDN (Cloudflare). When defined, these constants override any value the
+ * plugin saved to the database.
+ *
  * Reference: https://docs.litespeedtech.com/lscache/lscwp/constants/
  */
-define('LITESPEED_CONF', 1);
-defined('WP_CACHE') || define('WP_CACHE', true);
+if (str_contains($_SERVER['SERVER_SOFTWARE'] ?? '', 'LiteSpeed')) {
+    // LITESPEED_CONF enables file-based config; it must come before any LITESPEED_CONF__* key.
+    define('LITESPEED_CONF', 1);
+    defined('WP_CACHE') || define('WP_CACHE', true);
 
-// Page cache
-define('LITESPEED_CONF__CACHE__ENABLE', 1);
-define('LITESPEED_CONF__CACHE__TTL_PUB', 604800);       // 7 days — public pages
-define('LITESPEED_CONF__CACHE__TTL_FRONTPAGE', 604800);  // 7 days — homepage (auto-purge on deploy)
-define('LITESPEED_CONF__CACHE__TTL_PRIV', 1800);         // 30 min — logged-in users
+    // Page cache
+    define('LITESPEED_CONF__CACHE__ENABLE', 1);
+    define('LITESPEED_CONF__CACHE__TTL_PUB', 604800);        // 7 days — public pages
+    define('LITESPEED_CONF__CACHE__TTL_FRONTPAGE', 604800);  // 7 days — homepage (auto-purge on deploy)
+    define('LITESPEED_CONF__CACHE__TTL_PRIV', 1800);         // 30 min — logged-in users
 
-// Browser cache — resolves low TTL for fonts and static assets
-define('LITESPEED_CONF__BROWSER__ENABLE', 1);
-define('LITESPEED_CONF__BROWSER__TTL', 31536000); // 1 year — fonts, CSS, JS, images
+    // Browser cache — resolves low TTL for fonts and static assets
+    define('LITESPEED_CONF__BROWSER__ENABLE', 1);
+    define('LITESPEED_CONF__BROWSER__TTL', 31536000); // 1 year — fonts, CSS, JS, images
 
-// Auto-purge when WordPress updates content or plugins
-define('LITESPEED_CONF__PURGE__UPGRADE', 1);
+    // Auto-purge when WordPress updates content or plugins
+    define('LITESPEED_CONF__PURGE__UPGRADE', 1);
 
-// Debug OFF in production
-define('LITESPEED_CONF__DEBUG', 0);
+    // Debug OFF in production
+    define('LITESPEED_CONF__DEBUG', 0);
 
-// Suppress QUIC.cloud suggestion in admin (CDN handled by Cloudflare)
-define('LITESPEED_CONF__CDN__QUIC', 0);
+    // Suppress the QUIC.cloud suggestion in admin — the CDN is Cloudflare.
+    define('LITESPEED_CONF__CDN__QUIC', 0);
+}

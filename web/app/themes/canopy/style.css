@@ -1,14 +1,15 @@
 /*
- * Theme Name:  Canopy Theme
- * Theme URI:   https://github.com/Agencia-Upgrade/canopy
- * Description: WordPress boilerplate with Bedrock + Timber
- * Author:      Agência Upgrade
- * Author URI:  https://agenciaupgrade.com.br
+ * Theme Name:        Canopy
+ * Theme URI:         https://github.com/Agencia-Upgrade/canopy
+ * Description:       Production-ready WordPress starter by Agência Upgrade — Bedrock infrastructure, Timber/Twig templating, token-first CSS and on-demand JS, no build step. Fast, accessible, deploy-ready.
+ * Author:            Agência Upgrade
+ * Author URI:        https://agenciaupgrade.com.br
  * Version:           1.0.0
  * Requires at least: 7.0
  * Tested up to:      7.0
  * Requires PHP:      8.5
  * License:           MIT
+ * License URI:       https://opensource.org/licenses/MIT
  * Text Domain:       canopy
  * Domain Path:       /languages
  */

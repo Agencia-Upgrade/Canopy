@@ -5,7 +5,8 @@
 {% block content %}
 	<div class="cnp-search">
 		<header class="cnp-search__header">
-			<h1 class="cnp-search__title">Search Results for "{{ search_query }}"</h1>
+			{# search_query is user input — escape it. #}
+			<h1 class="cnp-search__title">{{ __('Search results for', 'canopy') }} "{{ search_query|e }}"</h1>
 		</header>
 
 		{% if posts %}
@@ -16,13 +17,14 @@
 							<a href="{{ post.link }}">{{ post.title }}</a>
 						</h2>
 						<p class="cnp-search__item-excerpt">{{ post.excerpt }}</p>
+						<a href="{{ post.link }}" class="cnp-search__item-link">{{ __('Read more →', 'canopy') }}</a>
 					</article>
 				{% endfor %}
 			</div>
 
 			{% include 'partials/pagination.twig' %}
 		{% else %}
-			<p class="cnp-search__no-results">No results found.</p>
+			<p class="cnp-search__no-results">{{ __('No results found.', 'canopy') }}</p>
 		{% endif %}
 	</div>
 {% endblock %}

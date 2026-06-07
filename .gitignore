@@ -27,6 +27,9 @@ auth.json
 # Twig cache
 /web/app/themes/*/cache
 
+# Mirrored third-party docs — kept locally for reference, not versioned
+/docs/_vendor/
+
 # Dependências PHP
 /vendor
 

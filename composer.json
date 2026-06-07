@@ -44,8 +44,10 @@
     "roots/wordpress": "^7.0",
     "roots/wp-config": "^1.0",
     "timber/timber": "^2.1",
-    "vlucas/phpdotenv": "^5.5",
-    "wp-plugin/litespeed-cache": "^7.8"
+    "vlucas/phpdotenv": "^5.5"
+  },
+  "suggest": {
+    "wp-plugin/litespeed-cache": "Page + browser caching on LiteSpeed/OpenLiteSpeed servers. Install with `composer require wp-plugin/litespeed-cache`; the config in config/environments/ activates its constants only when the server is LiteSpeed."
   },
   "require-dev": {
     "laravel/pint": "^1.27",

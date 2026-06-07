@@ -80,7 +80,7 @@ wp eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
 Runs every Monday at 07:00 UTC:
 
 1. **`composer update`** — respects version constraints in `composer.json`
-   - WordPress: `^6.9` (follows minor/patch, blocks MAJOR)
+   - WordPress: `^7.0` (follows minor/patch, blocks MAJOR)
    - Other packages: per their constraints
 2. **Check WordPress major version change** — if MAJOR bumped:
    - Alert message in logs
@@ -149,7 +149,7 @@ After deployment:
 - [ ] Check `https://example.com/wp/wp-admin` — login works
 - [ ] View WordPress console logs: `tail -f /var/log/php-fpm.log`
 - [ ] Check Redis cache: `redis-cli ping` → should return `PONG`
-- [ ] Verify Timber cache cleared: `ls -la web/app/themes/canopy/cache/` (should be empty)
+- [ ] Verify Timber cache cleared: `web/app/themes/canopy/cache/twig/` is empty or absent (it is recreated on first render; the deploy step clears it)
 - [ ] Test form submission (if any) — SMTP working?
 - [ ] Check Lighthouse score: DevTools → Lighthouse (should be ≥ 95)
 

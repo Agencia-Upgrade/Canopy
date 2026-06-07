@@ -14,7 +14,7 @@ Canopy is a production-ready WordPress boilerplate that combines Bedrock's infra
 - Timber/Twig for clean template separation
 - No build step for assets (CSS/JS committed directly)
 - Laravel Pint for PSR-12 formatting
-- LiteSpeed Cache for production caching
+- LiteSpeed Cache (optional) for production caching on LiteSpeed servers
 - GitHub Actions for deployment and auto-updates
 
 ---
@@ -30,7 +30,7 @@ Canopy is a production-ready WordPress boilerplate that combines Bedrock's infra
 | **Twig** | 3.x | Via Timber, clean separation of PHP/HTML |
 | **Laravel Pint** | ^1.0 | PSR-12 code formatting, `composer lint:fix` |
 | **PHPStan** | ^2.1 | Static analysis level 5 via `composer phpstan` |
-| **LiteSpeed Cache** | Latest | Production cache plugin via Composer |
+| **LiteSpeed Cache** | Latest | Optional — page + browser cache on LiteSpeed servers; install with `composer require wp-plugin/litespeed-cache` |
 
 ---
 

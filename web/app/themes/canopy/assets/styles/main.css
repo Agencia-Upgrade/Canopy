@@ -301,12 +301,23 @@
     margin-bottom: var(--cnp-space-8);
   }
 
-  .cnp-archive__item-excerpt {
+  .cnp-archive__item-excerpt,
+  .cnp-search__item-excerpt {
     margin-bottom: var(--cnp-space-12);
     color: var(--cnp-color-text-light);
   }
 
-  /* Search */
+  .cnp-archive__item-link,
+  .cnp-search__item-link {
+    color: var(--cnp-color-primary);
+  }
+
+  .cnp-archive__item-link:hover,
+  .cnp-search__item-link:hover {
+    color: var(--cnp-color-primary-dark);
+  }
+
+  /* Search — reuses the archive item layout */
   .cnp-search__header {
     margin-bottom: var(--cnp-space-32);
   }
@@ -314,6 +325,19 @@
   .cnp-search__list {
     display: grid;
     gap: var(--cnp-space-32);
+  }
+
+  .cnp-search__item {
+    padding-bottom: var(--cnp-space-24);
+    border-bottom: 1px solid var(--cnp-color-border);
+  }
+
+  .cnp-search__item:last-child {
+    border-bottom: none;
+  }
+
+  .cnp-search__item-title {
+    margin-bottom: var(--cnp-space-8);
   }
 
   .cnp-search__no-results {

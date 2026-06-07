@@ -7,11 +7,12 @@
 		{% include 'partials/head.twig' %}
 	</head>
 	<body class="{{ body_class }}">
-		<a href="#main" class="cnp-skip-link">Skip to main content</a>
+		<a href="#main" class="cnp-skip-link">{{ __('Skip to main content', 'canopy') }}</a>
 
 		{% include 'partials/header.twig' %}
 
 		<main id="main" class="main-content">
+			{# Child templates fill this block (see views/templates/*.twig). #}
 			{% block content %}{% endblock %}
 		</main>
 

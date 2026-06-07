@@ -192,6 +192,11 @@ class Site extends TimberSite
     /**
      * Add custom functions to Twig
      *
+     * Exposes WordPress' gettext functions to Twig so template strings are
+     * translatable with the 'canopy' text domain, e.g.
+     * {{ __('Read more', 'canopy') }} or {{ esc_html__('Search', 'canopy') }}.
+     * Generate a catalog from your templates with `wp i18n make-pot`.
+     *
      * @param array<string, mixed> $functions Current functions
      * @return array<string, mixed> Modified functions
      */
@@ -200,6 +205,10 @@ class Site extends TimberSite
         $functions['get_theme_mod'] = [
             'callable' => 'get_theme_mod',
         ];
+
+        foreach (['__', '_e', '_x', '_n', 'esc_html__', 'esc_html_e', 'esc_attr__', 'esc_attr_e'] as $fn) {
+            $functions[$fn] = ['callable' => $fn];
+        }
 
         return $functions;
     }
