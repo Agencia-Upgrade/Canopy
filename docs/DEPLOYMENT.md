@@ -37,6 +37,29 @@ Add these secrets:
 | `CF_ZONE_ID` | Cloudflare Zone ID (optional) | From Cloudflare dashboard |
 | `CF_API_TOKEN` | Cloudflare API token (optional) | Token with `cache_purge` permission |
 
+For the staging deploy (push to `dev`), add the staging equivalents:
+
+| Secret | Value | Example |
+|---|---|---|
+| `STAGING_SSH_HOST` | Staging server hostname | `staging.example.com` |
+| `STAGING_SSH_USER` | SSH user | `deploy` |
+| `STAGING_SSH_KEY` | SSH private key (full content) | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
+| `STAGING_SSH_PORT` | SSH port | `22` |
+| `STAGING_WP_PATH` | Project root on staging server | `/home/deploy/staging.example.com` |
+
+## Branches & Environments
+
+Canopy mirrors its `WP_ENV` environments with git branches:
+
+| Branch | Environment | Workflow |
+|---|---|---|
+| `main` | production (`WP_ENV=production`) | `deploy-production.yml` |
+| `dev` | staging (`WP_ENV=staging`) | `deploy-staging.yml` |
+
+Day-to-day work happens on `dev` (deploys to staging on push). When validated,
+merge `dev` into `main` to release to production. CI (lint + PHPStan) runs on
+both branches. The target server's `.env` sets the actual `WP_ENV`.
+
 ## Deployment Workflow
 
 ### On `push` to `main`
