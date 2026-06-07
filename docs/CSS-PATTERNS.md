@@ -66,6 +66,11 @@ to the project.
 The prefix is what gives each component its own namespace — it's why Canopy
 needs no build-time style scoping (see *Co-locating Styles* below).
 
+One exception: pagination styles a `.current` class (`.cnp-pagination__link.current`)
+because WordPress/Timber injects that class name on the active page link. When you
+must match a class WordPress generates, target it directly rather than renaming it
+to BEM.
+
 ## Components Canopy Ships
 
 These are the components defined in `main.css`, each paired with the template
@@ -169,11 +174,13 @@ Mobile-first, with `@media (min-width: …)`:
 }
 ```
 
-Breakpoints used across the theme: `768px` (tablet), `1024px` (desktop).
+The theme's only shipped breakpoint is `768px` (where `main.css` scales the
+gutter and the `2xl` display size up from their mobile base). Add `1024px` or
+others per component as the example above shows.
 
 ### Reduced motion
 
-The reset layer already honors `prefers-reduced-motion` globally; JS islands
+The utilities layer already honors `prefers-reduced-motion` globally; JS islands
 check it too (see [JAVASCRIPT.md](./JAVASCRIPT.md)). For component animations,
 respect it explicitly:
 

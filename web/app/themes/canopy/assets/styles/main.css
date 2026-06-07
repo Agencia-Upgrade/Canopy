@@ -77,14 +77,17 @@
     --cnp-font-size-base: 1.6rem;
     --cnp-font-size-lg: 2rem;
     --cnp-font-size-xl: 2.4rem;
-    --cnp-font-size-2xl: 3.2rem;
+    --cnp-font-size-2xl: 2.4rem; /* scales up to 3.2rem at >=768px (mobile-first) */
     --cnp-font-weight-normal: 400;
     --cnp-font-weight-medium: 500;
     --cnp-font-weight-bold: 700;
 
     /* Layout */
     --cnp-container-max-width: 120rem;
-    --cnp-gutter: var(--cnp-space-16);
+
+    /* Mobile-first: smaller gutter and display size are the base; they scale up
+       at the first breakpoint below. */
+    --cnp-gutter: var(--cnp-space-12);
 
     /* Transitions */
     --cnp-transition-fast: 150ms ease-in-out;
@@ -96,10 +99,10 @@
     --cnp-z-modal: 100;
   }
 
-  @media (max-width: 768px) {
+  @media (min-width: 768px) {
     :root {
-      --cnp-gutter: var(--cnp-space-12);
-      --cnp-font-size-2xl: 2.4rem;
+      --cnp-gutter: var(--cnp-space-16);
+      --cnp-font-size-2xl: 3.2rem;
     }
   }
 }
@@ -419,10 +422,9 @@
     color: var(--cnp-color-primary);
   }
 
-  /* Reveal island wrapper — content stays visible without JS (progressive enhancement) */
-  .cnp-reveal {
-    will-change: opacity, transform;
-  }
+  /* Reveal island wrapper — content stays visible without JS (progressive
+     enhancement). Motion manages compositing during the animation, so no
+     persistent will-change is set here. */
 
   /* Pagination */
   .cnp-pagination {

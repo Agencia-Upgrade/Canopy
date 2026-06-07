@@ -7,6 +7,18 @@
  * @author     Agência Upgrade <contato@agenciaupgrade.com.br>
  */
 
+use Roots\WPConfig\Config;
+
+use function Env\env;
+
+/**
+ * Disable WP's loopback cron in production: it would otherwise fire on visitor
+ * requests, adding latency under load. Schedule a real cron instead, e.g.
+ *   * /5 * * * *  cd /path/to/site && wp cron event run --due-now --quiet
+ * Override per host with DISABLE_WP_CRON in .env.
+ */
+Config::define('DISABLE_WP_CRON', env('DISABLE_WP_CRON') ?? true);
+
 /**
  * LiteSpeed Cache — file-first configuration, applied only on LiteSpeed servers
  *

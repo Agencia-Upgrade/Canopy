@@ -588,12 +588,13 @@ docker compose exec php wp --allow-root plugin activate yoast-seo
 
 ### SEO & Performance
 
-- **Lighthouse:** ≥ 95 (all metrics)
+- **Lighthouse:** ≥ 95 target (all metrics)
 - **Core Web Vitals:** Optimized (CLS, FID, LCP)
-- **Schema.org:** JSON-LD markup for rich snippets
-- **Robots.txt:** Dynamic (blocks AI bots, includes sitemap link)
-- **Sitemap:** Auto-generated (optional; set `wp_sitemaps_enabled` to enable WordPress native sitemaps)
-- **Caching:** LiteSpeed Cache plugin + browser cache headers
+- **Robots.txt:** Dynamic via `updateRobotsTxt()` — appends a `Sitemap:` line on live hosts (not on `.test`/`.local`/localhost)
+- **noindex:** `addNoindexTags()` emits `noindex,follow` on search, 404, and paged non-singular views
+- **Sitemap:** WordPress native sitemaps are disabled by default (`wp_sitemaps_enabled` → `__return_false`); enable them, or an SEO plugin, if you reference `/sitemap.xml` in robots.txt
+- **Schema.org / Open Graph:** not shipped — add per project (SEO plugin or template JSON-LD); the markup is clean and ready for it
+- **Caching:** LiteSpeed Cache (optional) + browser cache headers
 
 ### Accessibility
 
