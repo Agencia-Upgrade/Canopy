@@ -15,9 +15,16 @@ This directory contains public documentation for Canopy developers.
 - **[CSS-PATTERNS.md](./CSS-PATTERNS.md)** — CSS architecture and conventions
   - Token-first design with `@layer`
   - BEM naming with `cnp-` prefix
+  - Component co-location without a build step
   - Color system, typography scale, spacing scale
   - Responsive design patterns
   - Accessibility and performance tips
+
+- **[JAVASCRIPT.md](./JAVASCRIPT.md)** — JavaScript architecture (islands, no build)
+  - On-demand per-component modules via dynamic `import()`
+  - Lazy hydration with `IntersectionObserver`
+  - Writing and registering an island
+  - Loading heavy dependencies (Motion) per island
 
 - **[DEPLOYMENT.md](./DEPLOYMENT.md)** — Production deployment guide
   - GitHub Actions workflows (deploy-production, auto-update)
@@ -26,20 +33,15 @@ This directory contains public documentation for Canopy developers.
   - Debugging and troubleshooting
   - Best practices and advanced setup
 
-### External Documentation (Copied)
+### External Documentation (local, not versioned)
 
-- **[timber/](./timber/)** — Full Timber 2.x documentation
-  - [index.md](./timber/index.md) — Getting started
-  - [guides/](./timber/guides/) — Common patterns
-  - [integrations/](./timber/integrations/) — Plugin integrations
-  - [reference/](./timber/reference/) — API reference
+Mirrored third-party docs (Timber, Bedrock, LiteSpeed) live under
+`docs/_vendor/` and are git-ignored — they are kept locally for reference but
+excluded from the repository. Read them upstream:
 
-- **[bedrock/](./bedrock/)** — Bedrock project structure and configuration
-  - [Getting-Started/](./bedrock/Getting-Started/) — Setup and file organization
-
-- **[lscache/](./lscache/)** — LiteSpeed Cache documentation
-  - [lscwp/](./lscache/lscwp/) — WordPress plugin reference
-  - Key files: admin.md, cache.md, constants.md, cli.md, faq.md
+- **Timber 2.x** — https://timber.github.io/docs/v2/
+- **Bedrock** — https://roots.io/bedrock/docs/
+- **LiteSpeed Cache** — https://docs.litespeedtech.com/lscache/lscwp/
 
 ## Project Structure
 

@@ -1,10 +1,9 @@
-{# Head — meta tags and assets #}
+{# Head — meta tags and WordPress hooks. Assets are enqueued in Site.php. #}
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="x-ua-compatible" content="ie=edge">
 
-{# Preconnect to external services this theme actually uses #}
+{# Preconnect to jsDelivr — the reveal island imports Motion from there. #}
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
 {{ function('wp_head') }}

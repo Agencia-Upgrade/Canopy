@@ -24,8 +24,6 @@ ini_set('display_errors', '1');
 // Enable plugin and theme updates and installation from the admin
 Config::define('DISALLOW_FILE_MODS', false);
 
-// Cache OFF in development (Docker/Nginx — LiteSpeed not present)
-define('LITESPEED_CONF', 1);
-define('LITESPEED_CONF__CACHE__ENABLE', 0);
-define('LITESPEED_CONF__BROWSER__ENABLE', 0);
+// Cache OFF in development. The local stack is Docker/nginx, never LiteSpeed,
+// so the LITESPEED_CONF__* constants are not needed here — only WP_CACHE.
 defined('WP_CACHE') || define('WP_CACHE', false);

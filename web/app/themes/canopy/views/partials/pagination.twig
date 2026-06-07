@@ -3,7 +3,7 @@
 {% if posts.pagination.pages is not empty %}
 	<nav class="cnp-pagination" aria-label="Posts navigation">
 		{% if posts.pagination.prev %}
-			<a href="{{ posts.pagination.prev.link }}" class="cnp-pagination__prev" rel="prev">← Previous</a>
+			<a href="{{ posts.pagination.prev.link }}" class="cnp-pagination__prev" rel="prev">{{ __('← Previous', 'canopy') }}</a>
 		{% endif %}
 
 		<ul class="cnp-pagination__list">
@@ -19,7 +19,7 @@
 		</ul>
 
 		{% if posts.pagination.next %}
-			<a href="{{ posts.pagination.next.link }}" class="cnp-pagination__next" rel="next">Next →</a>
+			<a href="{{ posts.pagination.next.link }}" class="cnp-pagination__next" rel="next">{{ __('Next →', 'canopy') }}</a>
 		{% endif %}
 	</nav>
 {% endif %}

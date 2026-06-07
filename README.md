@@ -250,19 +250,11 @@ public function customizeRegister($customize): void
 
 ## Deployment
 
-### GitHub Actions
+Push to `main` triggers the GitHub Actions deploy. See
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for the full guide — required secrets,
+the auto-update workflow, production `.env` setup, and troubleshooting.
 
-Configure these secrets in your repository:
-
-- `PROD_SSH_HOST` — Production server hostname
-- `PROD_SSH_USER` — SSH user
-- `PROD_SSH_KEY` — SSH private key
-- `PROD_SSH_PORT` — SSH port (usually 22)
-- `PROD_WP_PATH` — Project path on server (e.g., `/home/user/public_html`)
-- `CF_ZONE_ID` — Cloudflare Zone ID (for cache purge)
-- `CF_API_TOKEN` — Cloudflare API token (cache_purge permission)
-
-### Manual Deployment
+Quick manual deploy:
 
 ```bash
 ssh user@host

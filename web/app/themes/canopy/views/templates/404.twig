@@ -4,8 +4,8 @@
 
 {% block content %}
 	<div class="cnp-error-404">
-		<h1 class="cnp-error-404__title">404 — Page Not Found</h1>
-		<p class="cnp-error-404__message">Sorry, we couldn't find the page you're looking for.</p>
-		<a href="{{ site.url }}" class="cnp-error-404__link">Back to Home →</a>
+		<h1 class="cnp-error-404__title">{{ __('404 — Page Not Found', 'canopy') }}</h1>
+		<p class="cnp-error-404__message">{{ __('Sorry, we couldn\'t find the page you\'re looking for.', 'canopy') }}</p>
+		<a href="{{ site.url }}" class="cnp-error-404__link">{{ __('Back to Home →', 'canopy') }}</a>
 	</div>
 {% endblock %}

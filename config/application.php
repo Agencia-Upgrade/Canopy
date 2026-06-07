@@ -119,7 +119,7 @@ Config::define('LOGGED_IN_SALT', env('LOGGED_IN_SALT'));
 Config::define('NONCE_SALT', env('NONCE_SALT'));
 
 /**
- * Localização
+ * Localization
  * Override via WP admin Settings > General, or set WPLANG in .env
  */
 Config::define('WPLANG', env('WPLANG') ?: '');

@@ -251,22 +251,18 @@ In Twig:
 
 ## Custom Filters
 
-Add in `Site.php`:
+Canopy ships one example filter, `excerpt`, registered in
+`Site::addFiltersToTwig()` (see `web/app/themes/canopy/src/Site.php`). Use it in
+any template:
 
-```php
-public function addFiltersToTwig($filters)
-{
-    $filters['excerpt'] = new TwigFilter('excerpt', function ($text, $length = 55) {
-        return wp_trim_words($text, $length);
-    });
-    return $filters;
-}
-```
-
-Use in Twig:
 ```twig
 {{ post.content|excerpt(30) }}
 ```
+
+Add your own filters in the same method — each is a `['callable' => …]` entry.
+Twig functions are registered the same way in `addFunctionsToTwig()`, which also
+exposes WordPress' gettext functions (`__`, `_e`, `_x`, `esc_html__`, …) for
+translatable template strings.
 
 ## Performance Tips
 
@@ -287,8 +283,13 @@ Good — fetch once in PHP, pass to context:
 $context['related'] = Timber::get_posts([...]);
 ```
 
+## Related
+
+- [CSS-PATTERNS.md](./CSS-PATTERNS.md) — token-first CSS, `@layer`, BEM, component co-location
+- [JAVASCRIPT.md](./JAVASCRIPT.md) — JS islands and Motion, loaded on demand
+
 ## Resources
 
 - [Timber Docs](https://timber.github.io/docs/v2/)
-- [Twig Reference](https://twig.symfony.com/doc/2.x/)
+- [Twig Reference](https://twig.symfony.com/doc/3.x/)
 - [WordPress `get_posts()` Args](https://developer.wordpress.org/reference/functions/get_posts/)

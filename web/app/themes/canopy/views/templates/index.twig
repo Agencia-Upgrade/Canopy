@@ -1,19 +1,23 @@
-{# Index — Fallback template #}
+{# Index — fallback template (used when no more specific template matches).
+   Reuses the .cnp-archive component, since it lists posts the same way. #}
 
 {% extends "layouts/base.twig" %}
 
 {% block content %}
-	<div class="cnp-index">
-		<h1 class="cnp-index__title">{{ archive_title|default('Blog') }}</h1>
+	<div class="cnp-archive">
+		<header class="cnp-archive__header">
+			<h1 class="cnp-archive__title">{{ archive_title|default(__('Blog', 'canopy')) }}</h1>
+		</header>
 
 		{% if posts %}
-			<div class="cnp-index__list">
+			<div class="cnp-archive__list">
 				{% for post in posts %}
-					<article class="cnp-index__item">
-						<h2 class="cnp-index__item-title">
+					<article class="cnp-archive__item">
+						<h2 class="cnp-archive__item-title">
 							<a href="{{ post.link }}">{{ post.title }}</a>
 						</h2>
-						<p class="cnp-index__item-excerpt">{{ post.excerpt }}</p>
+						<p class="cnp-archive__item-excerpt">{{ post.excerpt }}</p>
+						<a href="{{ post.link }}" class="cnp-archive__item-link">{{ __('Read more →', 'canopy') }}</a>
 					</article>
 				{% endfor %}
 			</div>
