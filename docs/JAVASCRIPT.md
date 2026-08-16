@@ -28,18 +28,18 @@ assets/scripts/
    <div data-island="reveal"> … </div>
    ```
 
-2. **`site.js` registers** each name → a dynamic import, and observes every
-   `[data-island]` element with an `IntersectionObserver`.
+2. **`site.js` is a host, not a registry.** It observes every `[data-island]`
+   with an `IntersectionObserver` and loads `./islands/<name>.js`. You do not
+   add the name to `site.js`. A page Twig can also set `data-island-src` to a
+   same-origin file under `assets/scripts/islands/`.
 
 3. **Hydration** happens when the element nears the viewport (the observer uses
    a 100px `rootMargin`, so it fires ~100px before scroll-in): the module is
    imported and its default export is called with the element.
 
    ```js
-   // assets/scripts/site.js
-   const islands = {
-     reveal: () => import('./islands/reveal.js'),
-   };
+   // assets/scripts/site.js — convention, no map
+   import(`./islands/${name}.js`);
    ```
 
 4. **Eager hydration** — add `data-island-eager` to hydrate immediately
@@ -58,7 +58,7 @@ An island is a module with a **default export** that receives its element:
 import { animate } from 'https://cdn.jsdelivr.net/npm/motion@12.40.0/+esm';
 
 export default function reveal(el) {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     return;
   }
 
@@ -73,35 +73,35 @@ export default function reveal(el) {
 Conventions:
 
 - **Default export, one argument** — the hydrated element.
-- **Respect reduced motion** — bail out early when
-  `prefers-reduced-motion: reduce` is set, before animating.
+- **Respect reduced motion** — animate only when
+  `prefers-reduced-motion: no-preference` matches.
 - **Import heavy deps inside the island** — never at the top of `site.js`.
   Pin the version in the CDN URL (`motion@12.40.0`).
 - **Vanilla JS**, ES6+, runs natively — no jQuery, no transpilation.
 
 ## Adding a New Island
 
-Three steps:
+Two steps — do not edit `site.js`.
 
 1. **Create the module** at `assets/scripts/islands/<name>.js` with a default
    export.
 
-2. **Register it** in `site.js` (which ships with a commented placeholder
-   showing exactly where new islands go):
-
-   ```js
-   const islands = {
-     reveal: () => import('./islands/reveal.js'),
-     // menu: () => import('./islands/menu.js'),   // ← add yours here
-   };
-   ```
-
-3. **Mark the markup** with `data-island="<name>"`. A reusable Twig wrapper
-   pattern lives in `views/components/reveal.twig`:
+2. **Mark the Twig** with `data-island="<name>"`, or wrap with the generic
+   island component:
 
    ```twig
-   {% include 'components/reveal.twig' with { content: '<p>Hi</p>' } %}
+   {% embed 'components/island.twig' with { name: 'pricing' } %}
+     {% block island %}…{% endblock %}
+   {% endembed %}
    ```
+
+   Optional Motion (Framer Motion) is `components/reveal.twig` →
+   `islands/reveal.js`. A page that never includes that markup never
+   downloads Motion.
+
+   Do not put JavaScript source inside the Twig. There is no compiler to
+   extract it (Astro/Svelte do that at build time). Twig declares; the
+   `.js` file runs.
 
 ## Loading
 

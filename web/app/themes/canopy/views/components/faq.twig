@@ -1,0 +1,33 @@
+{% if items %}
+	<section class="cnp-faq">
+		{% if heading %}
+			<h2 class="cnp-faq__heading">{{ heading }}</h2>
+		{% endif %}
+		<dl class="cnp-faq__list">
+			{% for item in items %}
+				<div class="cnp-faq__item">
+					<dt class="cnp-faq__q">{{ item.q }}</dt>
+					<dd class="cnp-faq__a">{{ item.a }}</dd>
+				</div>
+			{% endfor %}
+		</dl>
+	</section>
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "FAQPage",
+		"mainEntity": [
+			{% for item in items %}
+			{
+				"@type": "Question",
+				"name": {{ item.q|json_encode|raw }},
+				"acceptedAnswer": {
+					"@type": "Answer",
+					"text": {{ item.a|json_encode|raw }}
+				}
+			}{% if not loop.last %},{% endif %}
+			{% endfor %}
+		]
+	}
+	</script>
+{% endif %}

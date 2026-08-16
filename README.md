@@ -180,7 +180,9 @@ Canopy/
 ├── .env                       # Environment config (not versioned)
 ├── .env.example              # Environment template
 ├── composer.json
-├── CLAUDE.md                 # AI context
+├── AGENTS.md                 # Agent project rules
+├── CLAUDE.md                 # Points Claude Code at AGENTS.md + skill
+├── .agents/skills/canopy/    # Theme / Timber / Twig skill (versioned)
 └── .github/workflows/        # GitHub Actions
 ```
 
@@ -320,7 +322,8 @@ The theme uses `filemtime()` for cache-busting. Hard refresh with Ctrl+Shift+R /
 - [Bedrock Documentation](https://roots.io/bedrock/)
 - [Timber Documentation](https://timber.github.io/docs/v2/)
 - [Laravel Pint](https://laravel.com/docs/pint)
-- [CLAUDE.md](./CLAUDE.md) — AI-friendly context
+- [AGENTS.md](./AGENTS.md) — Agent project rules
+- [docs/KNOWN-ISSUES.md](./docs/KNOWN-ISSUES.md) — Known theme/doc issues
 
 ## License
 

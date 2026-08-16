@@ -44,11 +44,14 @@ setup:
 	@WP_HOME=$$(grep '^WP_HOME' .env | cut -d= -f2 | tr -d "'\""); \
 	docker compose exec php wp --allow-root core install \
 		--url="$$WP_HOME" \
-		--title="Canopy Site" \
+		--title="Canopy" \
 		--admin_user=admin \
 		--admin_password=admin \
 		--admin_email=admin@example.com 2>/dev/null
 	docker compose exec php wp --allow-root theme activate canopy 2>/dev/null
+	docker compose exec php wp --allow-root option update blogdescription "A WordPress starter that ships. Bedrock, Timber, and modern CSS — no build step." 2>/dev/null
+	docker compose exec php wp --allow-root rewrite structure '/%postname%/' 2>/dev/null
+	docker compose exec php wp --allow-root rewrite flush 2>/dev/null
 	@WP_HOME=$$(grep '^WP_HOME' .env | cut -d= -f2 | tr -d "'\""); \
 	echo ""; \
 	echo "Done! Access $$WP_HOME"; \

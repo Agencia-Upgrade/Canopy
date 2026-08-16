@@ -1,0 +1,10 @@
+{# Generic island. `name` loads assets/scripts/islands/<name>.js — do not edit site.js.
+   {% embed 'components/island.twig' with { name: 'pricing' } %}{% block island %}…{% endblock %}{% endembed %} #}
+<div
+	{% if class %}class="{{ class }}"{% endif %}
+	data-island="{{ name }}"
+	{% if src %}data-island-src="{{ src }}"{% endif %}
+	{% if eager %}data-island-eager{% endif %}
+>
+	{% block island %}{{ content|raw }}{% endblock %}
+</div>

@@ -39,10 +39,17 @@ auth.json
 # Logs
 *.log
 
-# Claude Code
+# Agent / Claude local state. Only the Canopy skill is versioned.
 /skills-lock.json
-/.claude/
-/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/canopy/
+!/.agents/skills/canopy/**
+/.claude/*
+!/.claude/skills/
+/.claude/skills/*
+!/.claude/skills/canopy/**
 
 # OS / editors
 .DS_Store

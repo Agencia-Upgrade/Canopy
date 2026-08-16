@@ -1,15 +1,30 @@
-{# Header — site header and navigation #}
-
 <header class="cnp-header">
 	<div class="cnp-header__inner">
-		<a href="{{ site.url }}" class="cnp-logo">{{ site.name }}</a>
+		{% include 'components/brand.twig' %}
 
 		{% if menu %}
-			<nav class="cnp-nav" aria-label="Primary">
+			<nav class="cnp-nav" aria-label="{{ __('Primary', 'canopy') }}">
 				<ul class="cnp-nav__list">
 					{% for item in menu.items %}
-						<li class="cnp-nav__item">
-							<a href="{{ item.url }}" class="cnp-nav__link">{{ item.title }}</a>
+						<li class="cnp-nav__item{% if item.children %} cnp-nav__item--parent{% endif %}">
+							<a
+								href="{{ item.url }}"
+								class="cnp-nav__link"
+								{% if item.current %}aria-current="page"{% endif %}
+							>{{ item.title }}</a>
+							{% if item.children %}
+								<ul class="cnp-nav__sub">
+									{% for child in item.children %}
+										<li class="cnp-nav__item">
+											<a
+												href="{{ child.url }}"
+												class="cnp-nav__link"
+												{% if child.current %}aria-current="page"{% endif %}
+											>{{ child.title }}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							{% endif %}
 						</li>
 					{% endfor %}
 				</ul>

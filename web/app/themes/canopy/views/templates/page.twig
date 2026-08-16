@@ -1,15 +1,20 @@
-{# Page #}
-
 {% extends "layouts/base.twig" %}
 
 {% block content %}
 	<article class="cnp-page">
+		{% include 'components/breadcrumbs.twig' %}
+
 		<header class="cnp-page__header">
 			<h1 class="cnp-page__title">{{ post.title }}</h1>
 		</header>
 
+		{% if post.thumbnail %}
+			<figure class="cnp-page__media">
+				<img src="{{ post.thumbnail.src }}" alt="{{ post.thumbnail.alt }}" width="{{ post.thumbnail.width }}" height="{{ post.thumbnail.height }}">
+			</figure>
+		{% endif %}
+
 		<div class="cnp-page__content">
-			{# post.content is sanitized by WordPress; raw keeps the HTML markup. Do not use raw on unfiltered input. #}
 			{{ post.content|raw }}
 		</div>
 	</article>

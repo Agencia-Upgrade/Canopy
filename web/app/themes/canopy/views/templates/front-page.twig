@@ -1,21 +1,49 @@
-{# Front Page #}
-
 {% extends "layouts/base.twig" %}
 
 {% block content %}
-	<div class="cnp-hero">
-		<div class="cnp-hero__inner">
-			<h1 class="cnp-hero__title">Welcome to {{ site.name }}</h1>
-			<p class="cnp-hero__subtitle">Built with Canopy — Bedrock + Timber</p>
-		</div>
-	</div>
+	{% include 'components/hero.twig' with {
+		title: __('Ship the site, not the toolchain.', 'canopy'),
+		eyebrow: __('WordPress starter', 'canopy'),
+		subtitle: site.description ? site.description : __('Bedrock, Timber, and modern CSS. No build step.', 'canopy'),
+		lede: __('Created by Gustavo Muniz at Agência Upgrade. Fork Canopy, rename the site, and edit pages in WordPress — the templates already look finished.', 'canopy'),
+		points: [
+			{
+				title: __('Edit pages, not the stack', 'canopy'),
+				text: __('PHP queries. Twig renders. Clients change copy without breaking the site.', 'canopy')
+			},
+			{
+				title: __('Recolor in one token', 'canopy'),
+				text: __('Change --cnp-hue in main.css. The rest of the theme follows.', 'canopy')
+			},
+			{
+				title: __('Motion only if you ask', 'canopy'),
+				text: __('Mark a block in Twig and Motion loads there. A simple page never downloads it.', 'canopy')
+			}
+		]
+	} %}
 
-	{% if post.content %}
+	{% include 'components/faq.twig' with {
+		heading: __('Before you fork', 'canopy'),
+		items: [
+			{
+				q: __('What is Canopy?', 'canopy'),
+				a: __('A WordPress starter created by Gustavo Muniz, founder of Agência Upgrade. Bedrock, Timber views, one CSS file. No build step.', 'canopy')
+			},
+			{
+				q: __('Do I need a JavaScript bundle?', 'canopy'),
+				a: __('No. Mark a block with data-island="reveal" and Motion loads on that page. Leave it off and the library never downloads.', 'canopy')
+			},
+			{
+				q: __('Where do I change colors and copy?', 'canopy'),
+				a: __('Recolor --cnp-hue in assets/styles/main.css. Change the site name, tagline, and pages in WordPress. views/ is layout.', 'canopy')
+			}
+		]
+	} %}
+
+	{% if post and post.type == 'page' and post.content %}
 		<div class="cnp-container">
-			{# Example island: the reveal component loads its JS (and Motion) on demand. #}
 			{% embed 'components/reveal.twig' %}
 				{% block reveal %}
-					{# post.content is sanitized by WordPress; raw keeps the HTML markup. Do not use raw on unfiltered input. #}
 					{{ post.content|raw }}
 				{% endblock %}
 			{% endembed %}

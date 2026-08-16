@@ -33,6 +33,8 @@ This directory contains public documentation for Canopy developers.
   - Debugging and troubleshooting
   - Best practices and advanced setup
 
+- **[KNOWN-ISSUES.md](./KNOWN-ISSUES.md)** — Theme and doc issues to fix later
+
 ### External Documentation (local, not versioned)
 
 Mirrored third-party docs (Timber, Bedrock, LiteSpeed) live under
@@ -45,12 +47,8 @@ excluded from the repository. Read them upstream:
 
 ## Project Structure
 
-See [CLAUDE.md](../CLAUDE.md) in the project root for:
-- Full stack documentation
-- Architecture overview
-- File structure reference
-- Getting started guide
-- Standards and conventions
+See [AGENTS.md](../AGENTS.md) in the project root for agent rules.
+Theme implementation details: `.agents/skills/canopy/SKILL.md`.
 
 See [README.md](../README.md) in the project root for:
 - Public project introduction

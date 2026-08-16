@@ -1,0 +1,16 @@
+# Canopy
+
+> A production WordPress starter from Agência Upgrade. Bedrock + Timber 2 + Twig views + one modern CSS file. No build step.
+
+Canopy is the theme and boilerplate agencies fork to ship WordPress sites. PHP queries data. Twig renders it. CSS lives in `web/app/themes/canopy/assets/styles/main.css` (`oklch`, `@layer`, `@scope`). JavaScript is islands: Motion (Framer Motion) loads only on markup marked `data-island="reveal"`.
+
+- Site: /
+- Start here: /start-here
+- Blog: /why-agencies-start-from-canopy
+- Search: /?s={query}
+- Theme source (repo path, not a site URL): web/app/themes/canopy/
+- Agency: https://agenciaupgrade.com.br
+
+Who it is for: product and marketing sites that Upgrade (and similar teams) will hack — rename the site, edit pages in WordPress, recolor `--cnp-hue`, add Twig blocks.
+
+Who it is not for: page-builder-first projects, or stacks that need a JS bundler on day one.

@@ -1,11 +1,13 @@
-{# 404 Not Found #}
-
 {% extends "layouts/base.twig" %}
 
 {% block content %}
 	<div class="cnp-error-404">
-		<h1 class="cnp-error-404__title">{{ __('404 — Page Not Found', 'canopy') }}</h1>
-		<p class="cnp-error-404__message">{{ __('Sorry, we couldn\'t find the page you\'re looking for.', 'canopy') }}</p>
-		<a href="{{ site.url }}" class="cnp-error-404__link">{{ __('Back to Home →', 'canopy') }}</a>
+		{% include 'components/breadcrumbs.twig' %}
+		<h1 class="cnp-error-404__title">{{ __('This page is gone', 'canopy') }}</h1>
+		<p class="cnp-error-404__message">{{ __('That address does not exist. Search, or go home.', 'canopy') }}</p>
+		{% include 'components/search-form.twig' with { field_id: 'cnp-search-404' } %}
+		<p class="cnp-error-404__home">
+			<a href="{{ site.url }}" class="cnp-error-404__link">{{ __('Go to the homepage', 'canopy') }}</a>
+		</p>
 	</div>
 {% endblock %}
