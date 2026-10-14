@@ -33,23 +33,34 @@ auth.json
 # Dependências PHP
 /vendor
 
+# Dependências Node (só lint, sem build)
+/node_modules/
+
 # PHPStan cache
 /tmp/
 
 # Logs
 *.log
 
-# Agent / Claude local state. Only the Canopy skill is versioned.
+# Agent / Claude local state. Only the Canopy, modern-css and
+# modern-web-guidance skills are versioned.
 /skills-lock.json
 /.agents/*
 !/.agents/skills/
 /.agents/skills/*
 !/.agents/skills/canopy/
 !/.agents/skills/canopy/**
+!/.agents/skills/modern-css/
+!/.agents/skills/modern-css/**
+!/.agents/skills/modern-web-guidance/
+!/.agents/skills/modern-web-guidance/**
 /.claude/*
 !/.claude/skills/
 /.claude/skills/*
+!/.claude/skills/canopy
 !/.claude/skills/canopy/**
+!/.claude/skills/modern-css
+!/.claude/skills/modern-web-guidance
 .gemini/
 .grok/
 .codebuddy/
