@@ -65,7 +65,7 @@ DB_NAME=canopy_local
 DB_USER=dev
 DB_PASSWORD=dev
 DB_HOST=db
-WP_HOME=http://localhost
+WP_HOME=http://localhost:8080
 WP_ENV=development
 ```
 
@@ -80,7 +80,7 @@ Install WordPress:
 
 ```bash
 docker compose exec php wp --allow-root core install \
-  --url=http://localhost \
+  --url=http://localhost:8080 \
   --title="My Site" \
   --admin_user=admin \
   --admin_password=password \
@@ -108,7 +108,7 @@ make wp core version
 
 # WP-CLI (commands with flags — use docker compose exec directly)
 docker compose exec php wp --allow-root core install \
-  --url=http://localhost --title="My Site" \
+  --url=http://localhost:8080 --title="My Site" \
   --admin_user=admin --admin_password=password \
   --admin_email=admin@example.com
 
@@ -175,7 +175,7 @@ Canopy/
 │   │           │   └── images/
 │   │           └── cache/    # Twig cache (generated)
 ├── .docker/                   # Docker config (Dockerfile, nginx, php.ini)
-├── docker-compose.yml         # Local dev stack (nginx, php, mariadb, mailpit)
+├── docker-compose.yml         # Local dev stack (nginx, php, mariadb, redis, mailpit)
 ├── Makefile                   # Docker shortcuts (make setup, make up, make wp, etc.)
 ├── .env                       # Environment config (not versioned)
 ├── .env.example              # Environment template
