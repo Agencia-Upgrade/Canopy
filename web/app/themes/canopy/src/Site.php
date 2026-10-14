@@ -79,18 +79,21 @@ class Site extends TimberSite
         $dir = get_template_directory();
         $uri = get_template_directory_uri();
 
+        $cssPath = $dir . '/assets/styles/main.css';
+        $jsPath = $dir . '/assets/scripts/site.js';
+
         wp_enqueue_style(
             'canopy-main',
             $uri . '/assets/styles/main.css',
             [],
-            filemtime($dir . '/assets/styles/main.css')
+            file_exists($cssPath) ? (string) filemtime($cssPath) : null
         );
 
         wp_enqueue_script_module(
             'canopy-site',
             $uri . '/assets/scripts/site.js',
             [],
-            filemtime($dir . '/assets/scripts/site.js')
+            file_exists($jsPath) ? (string) filemtime($jsPath) : null
         );
 
         if (is_singular()) {
@@ -382,7 +385,7 @@ class Site extends TimberSite
 
         $context['body_class'] = implode(' ', get_body_class());
         $context['archive_title'] = get_the_archive_title();
-        $context['search_query'] = get_search_query();
+        $context['search_query'] = get_search_query(false);
         $context['crumbs'] = $this->breadcrumbs();
 
         return $context;
