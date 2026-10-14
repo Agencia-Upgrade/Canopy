@@ -21,6 +21,7 @@
 - **Bedrock** — WordPress as a Composer dependency, cleaner folder structure
 - **Timber 2.x** — Twig templating for cleaner PHP/HTML separation
 - **Laravel Pint** — PSR-12 code formatting (PSR-4 namespacing)
+- **Stylelint** — modern-css rules enforced on `main.css` (`npm run lint:css`)
 - **LiteSpeed Cache** — File-first cache configuration for production
 - **Zero Build Step** — CSS and JS committed directly; optional minification
 - **GitHub Actions** — Automated deployment and weekly dependency updates
@@ -146,6 +147,9 @@ composer lint
 
 # Fix code style
 composer lint:fix
+
+# Check CSS (Stylelint, needs `npm install` first)
+npm run lint:css
 ```
 
 ## Structure
@@ -180,9 +184,12 @@ Canopy/
 ├── .env                       # Environment config (not versioned)
 ├── .env.example              # Environment template
 ├── composer.json
+├── package.json              # CSS lint deps only (Stylelint, no build)
+├── .stylelintrc.json         # Extends stylelint-config-modern
 ├── AGENTS.md                 # Agent project rules
 ├── CLAUDE.md                 # Points Claude Code at AGENTS.md + skill
 ├── .agents/skills/canopy/    # Theme / Timber / Twig skill (versioned)
+├── .agents/skills/modern-css/ # Required CSS rules (versioned)
 └── .github/workflows/        # GitHub Actions
 ```
 
