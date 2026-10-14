@@ -7,7 +7,7 @@
 		<p class="cnp-error-404__message">{{ __('That address does not exist. Search, or go home.', 'canopy') }}</p>
 		{% include 'components/search-form.twig' with { field_id: 'cnp-search-404' } %}
 		<p class="cnp-error-404__home">
-			<a href="{{ site.url }}" class="cnp-error-404__link">{{ __('Go to the homepage', 'canopy') }}</a>
+			<a href="{{ site.url|e('esc_url') }}" class="cnp-error-404__link">{{ __('Go to the homepage', 'canopy') }}</a>
 		</p>
 	</div>
 {% endblock %}

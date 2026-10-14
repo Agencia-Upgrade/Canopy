@@ -16,7 +16,7 @@
 			{% if terms %}
 				<ul class="cnp-post__terms">
 					{% for term in terms %}
-						<li><a href="{{ term.link }}">{{ term.name }}</a></li>
+						<li><a href="{{ term.link|e('esc_url') }}">{{ term.name }}</a></li>
 					{% endfor %}
 				</ul>
 			{% endif %}
@@ -24,7 +24,7 @@
 
 		{% if post.thumbnail %}
 			<figure class="cnp-post__media">
-				<img src="{{ post.thumbnail.src }}" alt="{{ post.thumbnail.alt }}" width="{{ post.thumbnail.width }}" height="{{ post.thumbnail.height }}">
+				<img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|e }}" width="{{ post.thumbnail.width }}" height="{{ post.thumbnail.height }}">
 			</figure>
 		{% endif %}
 

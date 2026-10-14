@@ -20,7 +20,7 @@
 				<ul class="cnp-footer__list">
 					{% for item in footer_menu.items %}
 						<li class="cnp-footer__item">
-							<a href="{{ item.url }}" class="cnp-footer__link">{{ item.title }}</a>
+							<a href="{{ item.url|e('esc_url') }}" class="cnp-footer__link">{{ item.title }}</a>
 						</li>
 					{% endfor %}
 				</ul>

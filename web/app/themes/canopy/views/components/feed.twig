@@ -28,7 +28,7 @@
 		<div class="cnp-feed__empty">
 			<p>{{ empty|default(__('Nothing here yet.', 'canopy')) }}</p>
 			{% if empty_link and empty_label %}
-				<p><a href="{{ empty_link }}">{{ empty_label }}</a></p>
+				<p><a href="{{ empty_link|e('esc_url') }}">{{ empty_label }}</a></p>
 			{% endif %}
 		</div>
 	{% endif %}

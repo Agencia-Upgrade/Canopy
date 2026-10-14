@@ -8,7 +8,7 @@
 					{% for item in menu.items %}
 						<li class="cnp-nav__item{% if item.children %} cnp-nav__item--parent{% endif %}">
 							<a
-								href="{{ item.url }}"
+								href="{{ item.url|e('esc_url') }}"
 								class="cnp-nav__link"
 								{% if item.current %}aria-current="page"{% endif %}
 							>{{ item.title }}</a>
@@ -17,7 +17,7 @@
 									{% for child in item.children %}
 										<li class="cnp-nav__item">
 											<a
-												href="{{ child.url }}"
+												href="{{ child.url|e('esc_url') }}"
 												class="cnp-nav__link"
 												{% if child.current %}aria-current="page"{% endif %}
 											>{{ child.title }}</a>

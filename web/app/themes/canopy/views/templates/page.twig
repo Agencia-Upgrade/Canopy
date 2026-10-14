@@ -10,7 +10,7 @@
 
 		{% if post.thumbnail %}
 			<figure class="cnp-page__media">
-				<img src="{{ post.thumbnail.src }}" alt="{{ post.thumbnail.alt }}" width="{{ post.thumbnail.width }}" height="{{ post.thumbnail.height }}">
+				<img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|e }}" width="{{ post.thumbnail.width }}" height="{{ post.thumbnail.height }}">
 			</figure>
 		{% endif %}
 
