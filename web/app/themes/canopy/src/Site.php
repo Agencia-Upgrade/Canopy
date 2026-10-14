@@ -454,11 +454,17 @@ class Site extends TimberSite
     public function updateRobotsTxt(string $output, mixed $public): string
     {
         $home = parse_url(home_url());
-        $host = is_array($home) && isset($home['host']) ? (string) $home['host'] : '';
+
+        if (!is_array($home)) {
+            return $output;
+        }
+
+        $host = isset($home['host']) ? (string) $home['host'] : '';
         $path = !empty($home['path']) ? $home['path'] : '';
 
         if ('localhost' !== $host && strpos($host, '.test') === false && strpos($host, '.local') === false) {
-            $output .= "\n\nSitemap: {$home['scheme']}://{$host}{$path}/sitemap.xml\n";
+            $scheme = $home['scheme'] ?? 'https';
+            $output .= "\n\nSitemap: {$scheme}://{$host}{$path}/sitemap.xml\n";
         }
 
         return $output;
