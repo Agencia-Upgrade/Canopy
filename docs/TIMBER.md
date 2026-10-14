@@ -8,13 +8,15 @@ Timber is a bridge between WordPress PHP and Twig templating. It wraps WordPress
 
 ### Context
 
-Data passed to Twig templates. Set in `Site.php`:
+Data passed to Twig templates. Globals live in `Site::addToContext()`
+(`web/app/themes/canopy/src/Site.php`); page-specific data is set in the
+hierarchy PHP file for that view. `posts` comes from the main query — do not
+assign it in `addToContext()`:
 
 ```php
 public function addToContext($context)
 {
     $context['menu'] = Timber::get_menu('primary_navigation');
-    $context['posts'] = Timber::get_posts();
     return $context;
 }
 ```
@@ -33,7 +35,7 @@ WordPress `WP_Post` → Timber `Timber\Post`
 Properties:
 ```twig
 {{ post.title }}
-{{ post.content }}           {# Post body (filtered, has_more check) #}
+{{ post.content|raw }}       {# WP-sanitized HTML; autoescape is off #}
 {{ post.excerpt }}          {# Post excerpt (auto-generated if missing) #}
 {{ post.link }}             {# Permalink #}
 {{ post.date|date('Y-m-d') }} {# Publication date #}
@@ -133,16 +135,20 @@ Get post meta:
 
 ### Related Posts
 
-```twig
-{% set related = Timber.get_posts({
-  'post__not_in': [post.id],
-  'posts_per_page': 3,
-  'tax_query': [{
-    'taxonomy': 'category',
-    'terms': post.terms('category')|map(attribute='id')|join(',')
-  }]
-}) %}
+Query in PHP, pass to context, loop in Twig:
 
+```php
+$context = Timber::context([
+    'related' => Timber::get_posts([
+        'post_type' => 'post',
+        'posts_per_page' => 3,
+        'post__not_in' => [get_the_ID()],
+    ]),
+]);
+Timber::render('templates/single.twig', $context);
+```
+
+```twig
 {% for post in related %}
   <a href="{{ post.link }}">{{ post.title }}</a>
 {% endfor %}
@@ -150,33 +156,28 @@ Get post meta:
 
 ### Pagination
 
+The theme uses the collection API — `posts.pagination` plus
+`views/partials/pagination.twig`. Never `Timber::get_pagination()`:
+
 ```php
 // In PHP template
-$posts = Timber::get_posts([
+$context = Timber::context();
+$context['posts'] = Timber::get_posts([
     'posts_per_page' => 10,
     'paged' => get_query_var('paged') ?: 1,
 ]);
 
-$context = Timber::context();
-$context['posts'] = $posts;
-$context['pagination'] = Timber::get_pagination();
-
 Timber::render('templates/archive.twig', $context);
 ```
 
-In Twig:
+In Twig (`templates/archive.twig`):
+
 ```twig
 {% for post in posts %}
   {# Post markup #}
 {% endfor %}
 
-{% for page in pagination %}
-  {% if page.current %}
-    <span class="current">{{ page.number }}</span>
-  {% else %}
-    <a href="{{ page.link }}">{{ page.number }}</a>
-  {% endif %}
-{% endfor %}
+{% include 'partials/pagination.twig' %}
 ```
 
 ## Query Examples

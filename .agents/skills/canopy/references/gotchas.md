@@ -14,10 +14,6 @@ Follow the theme when a doc snippet disagrees. Product issues are listed in
 
 | Snippet | What the theme actually does |
 |---|---|
-| `docs/TIMBER.md` pagination + `Timber::get_pagination()` | `posts.pagination` in `partials/pagination.twig` |
-| Related posts via `Timber.get_posts` inside Twig | Anti-pattern; query in PHP |
-| `addToContext()` assigning `posts` | Not shipped; Timber already sets `posts` on archives |
-| `{{ post.content }}` without `\|raw` in TIMBER.md | Theme uses `\|raw` on WP-sanitized content |
 | “Buttons, cards, CTA blocks” as shipped components | Only structural `cnp-` blocks exist |
 | Atomic Design / `@atoms` / PHP Twig Components | Flat `views/{layouts,partials,components,templates}` |
 | `.cnp-archive` / `.cnp-search` | `.cnp-feed` + `.cnp-teaser` |
@@ -47,8 +43,8 @@ Follow the theme when a doc snippet disagrees. Product issues are listed in
   `item.current`. Footer stays a flat list.
 - `archive_title` and `search_query` are set globally, including on singular
   views.
-- Native sitemaps are disabled. Live `robots.txt` still appends
-  `/sitemap.xml` unless you enable sitemaps or an SEO plugin.
+- Native sitemaps are disabled. `robots.txt` omits the `Sitemap:` line
+  unless sitemaps are re-enabled or an SEO plugin provides one.
 - `excerpt` Twig filter is unused in shipped templates; lists use
   `post.excerpt`.
 - Timber `posts` is a collection object. `{% if posts %}` is always true.

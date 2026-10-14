@@ -155,7 +155,8 @@ WP_REDIS_PORT=6379
 
 # Transactional email (if not using Mailpit)
 SMTP_HOST=mail.example.com
-SMTP_PORT=465
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
 SMTP_USER=noreply@example.com
 SMTP_PASS=email_password
 SMTP_FROM=noreply@example.com

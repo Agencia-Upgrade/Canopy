@@ -91,19 +91,21 @@ POT from templates: `wp i18n make-pot`.
 ## SMTP
 
 `Site::configureSMTP()` uses `getenv()`, not `Env\env()`, so host-injected
-secrets work. If `SMTP_HOST` is empty, PHPMailer is left alone (local Mailpit
-does not see WP mail unless you set SMTP).
+secrets work. If `SMTP_HOST` is empty, PHPMailer is left alone and mail goes
+through PHP `mail()` / `sendmail_path` (in Docker: msmtp to `mailpit:1025`).
 
 | Env | Default in code |
 |---|---|
 | `SMTP_HOST` | required to enable |
 | `SMTP_PORT` | `587` |
-| `SMTP_ENCRYPTION` | `tls` |
+| `SMTP_ENCRYPTION` | `tls`; `none` disables TLS and AutoTLS |
 | `SMTP_USER` + `SMTP_PASS` | auth only if both set |
 | `SMTP_FROM` | `noreply@{home host}` |
 | `SMTP_FROM_NAME` | `get_bloginfo('name')` |
 
-`.env.example` shows `465` / `ssl`. That is an example, not the code default.
+`.env.example` ships Mailpit dev defaults (`mailpit` / `1025` / `none`).
+Production typically uses `587` / `tls`, which are also the code defaults
+when the vars are unset.
 
 ## Quality
 

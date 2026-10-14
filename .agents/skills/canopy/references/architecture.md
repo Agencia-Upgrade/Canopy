@@ -124,7 +124,7 @@ from `wp_enqueue_*`, not Twig.
 | `timber/twig/filters` | `addFiltersToTwig` | `excerpt` |
 | `timber/twig/functions` | `addFunctionsToTwig` | `get_theme_mod` + gettext |
 | `timber/twig/environment/options` | `updateTwigEnvironmentOptions` | debug auto_reload vs `cache/twig` |
-| `robots_txt` | `updateRobotsTxt` | Sitemap line on live hosts |
+| `robots_txt` | `updateRobotsTxt` | Sitemap line on live hosts, only if sitemaps enabled |
 | `wp_sitemaps_enabled` | `__return_false` | native sitemaps off |
 | `wp_mail_from` / `from_name` / `phpmailer_init` | mail + SMTP | `getenv('SMTP_*')` |
 

@@ -105,8 +105,6 @@ Use the collection API, as `views/partials/pagination.twig` does:
 - `posts.pagination.prev.link` / `posts.pagination.next.link`
 - Current page has no `page.link`; CSS expects Timber's `current` class
 
-Do not copy the `Timber::get_pagination()` snippet in `docs/TIMBER.md`.
-
 ## Escaping
 
 Timber's Twig environment defaults `autoescape` to `false`. Canopy does not

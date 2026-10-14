@@ -450,13 +450,17 @@ class Site extends TimberSite
     }
 
     /**
-     * Appends Sitemap on live hosts only (skips localhost, .test, .local).
+     * Appends Sitemap only when WP sitemaps are enabled, on live hosts only.
      *
      * @param string $output
      * @param mixed $public
      */
     public function updateRobotsTxt(string $output, mixed $public): string
     {
+        if (! (bool) apply_filters('wp_sitemaps_enabled', true)) {
+            return $output;
+        }
+
         $home = parse_url(home_url());
 
         if (!is_array($home)) {
@@ -503,7 +507,14 @@ class Site extends TimberSite
         $phpmailer->isSMTP();
         $phpmailer->Host       = (string) getenv('SMTP_HOST');
         $phpmailer->Port       = (int) (getenv('SMTP_PORT') ?: 587);
-        $phpmailer->SMTPSecure = getenv('SMTP_ENCRYPTION') ?: 'tls';
+        $encryption            = strtolower((string) (getenv('SMTP_ENCRYPTION') ?: 'tls'));
+
+        if ($encryption === 'none') {
+            $phpmailer->SMTPSecure  = '';
+            $phpmailer->SMTPAutoTLS = false;
+        } else {
+            $phpmailer->SMTPSecure = $encryption;
+        }
 
         // Authenticate only when both credentials are present; some relays
         // authenticate by IP and need no username/password.
