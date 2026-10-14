@@ -1,28 +1,12 @@
-{# Index — fallback template (used when no more specific template matches).
-   Reuses the .cnp-archive component, since it lists posts the same way. #}
-
+{# WP fallback and the posts page when a static front is set. #}
 {% extends "layouts/base.twig" %}
 
 {% block content %}
-	<div class="cnp-archive">
-		<header class="cnp-archive__header">
-			<h1 class="cnp-archive__title">{{ archive_title|default(__('Blog', 'canopy')) }}</h1>
-		</header>
-
-		{% if posts %}
-			<div class="cnp-archive__list">
-				{% for post in posts %}
-					<article class="cnp-archive__item">
-						<h2 class="cnp-archive__item-title">
-							<a href="{{ post.link }}">{{ post.title }}</a>
-						</h2>
-						<p class="cnp-archive__item-excerpt">{{ post.excerpt }}</p>
-						<a href="{{ post.link }}" class="cnp-archive__item-link">{{ __('Read more →', 'canopy') }}</a>
-					</article>
-				{% endfor %}
-			</div>
-
-			{% include 'partials/pagination.twig' %}
-		{% endif %}
-	</div>
+	{% include 'components/feed.twig' with {
+		title: archive_title|default(__('Blog', 'canopy')),
+		lede: __('Writing from the team.', 'canopy'),
+		empty: __('No posts yet. Publish one in the dashboard — it will show up here.', 'canopy'),
+		empty_link: site.url,
+		empty_label: __('Go to the homepage', 'canopy')
+	} %}
 {% endblock %}

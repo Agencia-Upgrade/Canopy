@@ -1,0 +1,20 @@
+<article class="cnp-teaser">
+	{% if post.thumbnail %}
+		<a class="cnp-teaser__media" href="{{ post.link|e('esc_url') }}" tabindex="-1" aria-hidden="true">
+			<img src="{{ post.thumbnail.src|e('esc_url') }}" alt="" width="{{ post.thumbnail.width }}" height="{{ post.thumbnail.height }}" loading="lazy">
+		</a>
+	{% endif %}
+	<div class="cnp-teaser__body">
+		<time class="cnp-teaser__date" datetime="{{ post.date|date('c') }}">{{ post.date|date('F j, Y') }}</time>
+		<h2 class="cnp-teaser__title">
+			<a href="{{ post.link|e('esc_url') }}">{{ post.title }}</a>
+		</h2>
+		{% if post.excerpt %}
+			<p class="cnp-teaser__excerpt">{{ post.excerpt }}</p>
+		{% endif %}
+		<a class="cnp-teaser__link" href="{{ post.link|e('esc_url') }}">
+			{{ __('Read the post', 'canopy') }}
+			<span class="sr-only">{{ post.title }}</span>
+		</a>
+	</div>
+</article>

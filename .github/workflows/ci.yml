@@ -37,3 +37,15 @@ jobs:
 
       - name: Static analysis (PHPStan level 5)
         run: composer phpstan
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install CSS lint dependencies
+        run: npm ci
+
+      - name: Lint CSS (Stylelint)
+        run: npm run lint:css

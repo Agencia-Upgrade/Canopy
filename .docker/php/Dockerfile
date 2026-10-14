@@ -5,7 +5,7 @@ FROM php:8.5-fpm-bookworm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    curl git zip unzip \
+    curl git zip unzip msmtp \
     libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev \
     libonig-dev libxml2-dev libzip-dev libicu-dev libssl-dev \
     libmagickwand-dev \

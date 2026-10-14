@@ -3,10 +3,9 @@
 /**
  * Template Name: Page
  *
- * The template for displaying pages.
- *
- * @package    canopy
- * @author     Agência Upgrade <contato@agenciaupgrade.com.br>
+ * @package canopy
+ * @author  Agência Upgrade <contato@agenciaupgrade.com.br>
+ * @link    https://agenciaupgrade.com.br
  */
 
 use Timber\Timber;

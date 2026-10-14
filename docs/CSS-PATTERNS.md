@@ -6,210 +6,80 @@ How Canopy's CSS is organized, and how to edit or extend it. All styles live in
 one file — `web/app/themes/canopy/assets/styles/main.css` — served as-is with no
 build step. This guide is the map; `main.css` is the source of truth.
 
-## Architecture Overview
+## Architecture
 
-Canopy uses a **token-first** approach: design values live in CSS custom
-properties, components consume them. Organization is by `@layer`, naming is
-**BEM** with the `cnp-` prefix.
-
-### Layers (in order)
+Token-first, `@layer`, `@scope` per Twig block, BEM with the `cnp-` prefix.
+`@scope` is the no-build stand-in for a Svelte/Astro scoped `<style>`: the
+selector belongs to one component, but the CSS is still one request.
 
 ```css
 @layer reset, tokens, base, components, utilities;
 ```
 
-1. **Reset** — browser normalization (no classes)
-2. **Tokens** — custom properties: colors, spacing, typography, layout, z-index
-3. **Base** — element defaults (`h1`–`h6`, `p`, `a`, form controls)
-4. **Components** — the `cnp-` blocks (`.cnp-header`, `.cnp-hero`, …)
-5. **Utilities** — single-purpose helpers (`.sr-only`, `.cnp-skip-link`)
+1. **Reset** — normalize, no classes. `html` is a size container (`cqi`).
+2. **Tokens** — `--cnp-*` in `oklch()` + `light-dark()`, fluid `clamp()`.
+3. **Base** — element defaults. Headings `text-wrap: balance`; `p` `pretty`.
+4. **Components** — one `@scope (.cnp-…)` per Twig block, render-tree order.
+5. **Utilities** — `.sr-only`, `.cnp-skip-link`.
 
-Because `base` already styles elements, a component class is a **hook** — it
-adds only the deltas its block needs. A heading inside `.cnp-archive__title`
-gets its size from the `base` layer; the component layer doesn't restate it.
-
-### Font Scale
-
-**1rem = 10px** (set via `html { font-size: 62.5%; }`). Math stays simple:
-`1.6rem` = 16px, `2rem` = 20px.
-
-### Tokens
-
-The full token set — colors, the `--cnp-space-*` scale, the `--cnp-font-size-*`
-scale, layout, transitions, z-index — lives in the `tokens` layer of `main.css`.
-Read it there rather than here, so there's one source of truth. To retheme
-Canopy, edit those values; every component updates with them.
+Page and post use donut scope so chrome does not leak into `post.content`:
 
 ```css
-/* Consume tokens; never hard-code values in components. */
-.cnp-card {
-  padding: var(--cnp-space-16);
-  color: var(--cnp-color-text);
-  border-radius: 4px;
-}
+@scope (.cnp-post) to (.cnp-post__content) { }
 ```
 
-To add a status palette (success / warning / error), add the tokens to the
-`tokens` layer — Canopy ships a neutral palette and leaves brand/status colors
-to the project.
+There is no `html { font-size: 62.5% }`. Root rem is the browser default.
+Type and space tokens are `clamp(min rem, rem + cqi, max rem)`.
 
-## BEM Naming Convention
+Brand greens from the Upgrade mark (`--cnp-hue: 168deg`). Retheme by editing
+`:root` (start with `--cnp-hue`). Do not hard-code hex.
 
-**Block__Element--Modifier**, all prefixed `cnp-`:
+## BEM
 
-```css
-.cnp-card { }              /* Block */
-.cnp-card__title { }       /* Element */
-.cnp-card--featured { }    /* Modifier */
-```
+`Block__Element--Modifier`, prefixed `cnp-`. Exception: Timber/WP injects
+`.current` on the active pagination link — target `.cnp-pagination__link.current`.
 
-The prefix is what gives each component its own namespace — it's why Canopy
-needs no build-time style scoping (see *Co-locating Styles* below).
+## What ships
 
-One exception: pagination styles a `.current` class (`.cnp-pagination__link.current`)
-because WordPress/Timber injects that class name on the active page link. When you
-must match a class WordPress generates, target it directly rather than renaming it
-to BEM.
+Website-first. Listings share one feed, not a blog chrome.
 
-## Components Canopy Ships
-
-These are the components defined in `main.css`, each paired with the template
-that renders it. Edit them, extend them with modifiers, or delete what you don't
-use. Canopy ships **structural** components only — no styled button/card/modal
-library to undo.
-
-| Block | Renders in | Purpose |
+| Block | Renders in | Role |
 |---|---|---|
-| `.cnp-header` / `.cnp-header__inner` / `.cnp-logo` | `partials/header.twig` | Sticky site header |
-| `.cnp-nav__list` / `.cnp-nav__link` | `partials/header.twig` | Primary navigation |
-| `.cnp-footer__*` | `partials/footer.twig` | Site footer + footer nav |
-| `.cnp-hero__*` | `templates/front-page.twig` | Front-page hero |
-| `.cnp-page__*` | `templates/page.twig` | Static page |
-| `.cnp-post__*` | `templates/single.twig` | Single post |
-| `.cnp-archive__*` | `templates/archive.twig`, `index.twig` | Post listing |
-| `.cnp-search__*` | `templates/search.twig` | Search results |
-| `.cnp-pagination__*` | `partials/pagination.twig` | Paged navigation |
-| `.cnp-error-404__*` | `templates/404.twig` | 404 page |
-| `.cnp-reveal` | `components/reveal.twig` | Scroll-reveal island wrapper |
-| `.cnp-skip-link` / `.sr-only` | `layouts/base.twig` | Accessibility utilities |
+| `.cnp-main` | `layouts/base.twig` | Main landmark + container |
+| `.cnp-header` / `.cnp-nav` | `partials/header.twig` | Sticky header (`:has(.cnp-nav)`) |
+| `.cnp-brand` | `components/brand.twig` | Logo mark + site name |
+| `.cnp-hero` | `components/hero.twig` | Front hero (eager reveal) |
+| `.cnp-faq` | `components/faq.twig` | Extractable Q&A + FAQPage JSON-LD |
+| `.cnp-crumbs` | `components/breadcrumbs.twig` | Breadcrumb trail |
+| `.cnp-search` | `components/search-form.twig` | GET `?s=` form |
+| `.cnp-container` | `templates/front-page.twig` | Measure wrap under the hero (own `@scope`; sibling of `.cnp-hero`) |
+| `.cnp-page` | `templates/page.twig` | Static page (donut) |
+| `.cnp-post` | `templates/single.twig` | Single (donut) |
+| `.cnp-feed` / `.cnp-teaser` | `components/feed.twig`, `teaser.twig` | Archive, index, search |
+| `.cnp-pagination` | `partials/pagination.twig` | Paged nav |
+| `.cnp-error-404` | `templates/404.twig` | 404 |
+| `.cnp-reveal` | `components/reveal.twig` | Island hook (no visual CSS) |
+| `.cnp-footer` | `partials/footer.twig` | Footer |
+| `.cnp-skip-link` / `.sr-only` | `layouts/base.twig` | A11y |
 
-There is **no** `.cnp-button`, `.cnp-card`, or `.cnp-grid` — those are example
-names in this guide, not shipped classes. Add them as your project needs.
+No `.cnp-button`, `.cnp-card`, or `.cnp-grid`. No Atomic Design folders.
 
-## Co-locating Styles with Components
+## Adding a component
 
-There's no build step, so styles aren't physically scoped to a file the way a
-`.astro` or `.vue` component is. Canopy co-locates **by convention**: each Twig
-component maps one-to-one to a section in the `components` layer, tied by a
-section comment. The `cnp-` prefix + BEM keep namespaces from colliding, so no
-scoping tool is needed.
-
-When you add `views/components/card.twig`, add a matching section in `main.css`:
-
-```css
-/* =============================================================================
-   Layer: Components — Card  (views/components/card.twig)
-   ============================================================================= */
-@layer components {
-  .cnp-card { padding: var(--cnp-space-16); }
-  .cnp-card__title { margin-bottom: var(--cnp-space-8); }
-  .cnp-card--featured { border: 2px solid var(--cnp-color-primary); }
-}
-```
-
-The workflow: open `card.twig` and the `Card` section of `main.css` side by
-side. One request, fully cacheable, no tooling.
-
-Reserve the `base` layer for element-level defaults (typography, links, form
-controls). Anything belonging to a specific component goes in its `components`
-section, not in `base`.
-
-## Common Patterns
-
-These show the conventions on **example** classes — adapt them to your own
-components.
-
-### Component with states
-
-```css
-.cnp-card {
-  padding: var(--cnp-space-12) var(--cnp-space-16);
-  border-radius: 4px;
-  transition: background-color var(--cnp-transition-fast);
-}
-
-.cnp-card--featured {
-  border: 2px solid var(--cnp-color-primary);
-}
-```
-
-### Focus states (accessibility)
-
-Matches the shipped pattern — visible focus via `:focus-visible`:
-
-```css
-.cnp-card__link:focus-visible {
-  outline: 2px solid var(--cnp-color-primary);
-  outline-offset: 2px;
-}
-```
-
-### Responsive
-
-Mobile-first, with `@media (min-width: …)`:
-
-```css
-.cnp-card-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--cnp-space-16);
-}
-
-@media (min-width: 768px) {
-  .cnp-card-list { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (min-width: 1024px) {
-  .cnp-card-list { grid-template-columns: repeat(3, 1fr); }
-}
-```
-
-The theme's only shipped breakpoint is `768px` (where `main.css` scales the
-gutter and the `2xl` display size up from their mobile base). Add `1024px` or
-others per component as the example above shows.
-
-### Reduced motion
-
-The utilities layer already honors `prefers-reduced-motion` globally; JS islands
-check it too (see [JAVASCRIPT.md](./JAVASCRIPT.md)). For component animations,
-respect it explicitly:
-
-```css
-@media (prefers-reduced-motion: reduce) {
-  .cnp-card { transition: none; }
-}
-```
-
-## File Organization
-
-One `main.css`, organized by `@layer`. The web server (and LiteSpeed Cache, when
-present) handles minification and compression; the file is served as-is with
-`filemtime()` cache-busting. Section comments mark each block:
-
-```css
-/* =============================================================================
-   Layer: Components — Header
-   ============================================================================= */
-```
+1. Twig under `views/components/<name>.twig`.
+2. `@scope (.cnp-<name>)` in `@layer components`, in render-tree order.
+3. Tokens only. Logical properties. Nest with `&`.
+4. Motion only inside `@media (prefers-reduced-motion: no-preference)`.
 
 ## Related
 
-- [TIMBER.md](./TIMBER.md) — templates that render these components
-- [JAVASCRIPT.md](./JAVASCRIPT.md) — JS islands and Motion
+- [TIMBER.md](./TIMBER.md) — templates
+- [JAVASCRIPT.md](./JAVASCRIPT.md) — islands and Motion
 
 ## Resources
 
-- [MDN CSS Guide](https://developer.mozilla.org/en-US/docs/Web/CSS)
-- [BEM Naming](http://getbem.com/naming/)
-- [CSS Layers (`@layer`)](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)
-- [CSS Custom Properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
+- [CSS Layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)
+- [`@scope`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@scope)
+- [`oklch()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch)
+- [Logical properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Logical_properties_and_values)
+- [BEM](http://getbem.com/naming/)

@@ -2,7 +2,10 @@
 # Agência Upgrade — https://agenciaupgrade.com.br
 
 path: web/wp
-url: ${WP_HOME}
+# No `url:` here on purpose. This is a single-site install: WP-CLI derives the
+# URL from the database. A `url: ${WP_HOME}` default would rely on env-var
+# interpolation in wp-cli.yml values, which WP-CLI does not document (static
+# values only). Multisite would need `--url=` per command instead.
 
 server:
   docroot: web

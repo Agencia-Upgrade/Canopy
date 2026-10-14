@@ -1,0 +1,16 @@
+{
+  "name": "canopy",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "lint:css": "stylelint \"web/app/themes/canopy/assets/styles/**/*.css\"",
+    "lint:css:fix": "stylelint \"web/app/themes/canopy/assets/styles/**/*.css\" --fix"
+  },
+  "devDependencies": {
+    "stylelint": "^17.16.0",
+    "stylelint-config-modern": "^1.0.0"
+  }
+}

@@ -71,6 +71,29 @@ composer install --no-dev --optimize-autoloader
 wp rewrite flush --allow-root
 wp cache flush --allow-root
 wp eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
+wp eval 'Timber\Cache\Cleaner::clear_cache_twig();' --allow-root
+```
+
+## Domain migration (safe search-replace)
+
+Changing domains or switching `http` → `https`? Follow this order —
+never run the replace without a backup and a dry run first:
+
+```bash
+cd /home/deploy/example.com
+
+# 1. Backup
+wp db export /backups/db-pre-migration.sql --allow-root
+
+# 2. Dry run — review which tables/rows would change
+wp search-replace 'http://old.example.com' 'https://example.com' --dry-run --allow-root
+
+# 3. Real replace (add --all-tables-with-prefix if non-core tables hold URLs)
+wp search-replace 'http://old.example.com' 'https://example.com' --allow-root
+
+# 4. Flush
+wp cache flush --allow-root
+wp rewrite flush --allow-root
 ```
 
 ## Weekly Auto-Update Workflow
@@ -132,7 +155,8 @@ WP_REDIS_PORT=6379
 
 # Transactional email (if not using Mailpit)
 SMTP_HOST=mail.example.com
-SMTP_PORT=465
+SMTP_PORT=587
+SMTP_ENCRYPTION=tls
 SMTP_USER=noreply@example.com
 SMTP_PASS=email_password
 SMTP_FROM=noreply@example.com
@@ -169,8 +193,10 @@ git reset --hard <commit-hash>
 
 # Redeploy
 composer install --no-dev --optimize-autoloader
+wp rewrite flush --allow-root
 wp cache flush --allow-root
 wp eval 'Timber\Cache\Cleaner::clear_cache_timber();' --allow-root
+wp eval 'Timber\Cache\Cleaner::clear_cache_twig();' --allow-root
 ```
 
 Or revert on GitHub:
@@ -253,8 +279,8 @@ wp db query 'SELECT 1;' --allow-root
 Add to production server's crontab:
 
 ```bash
-# Daily database backup (3 AM)
-0 3 * * * wp db export /backups/db-$(date +\%Y-\%m-\%d).sql --allow-root
+# Daily database backup (3 AM) — `cd` first so `wp-cli.yml` is discovered.
+0 3 * * * cd /home/deploy/example.com && wp db export /backups/db-$(date +\%Y-\%m-\%d).sql --allow-root
 
 # Weekly full backup (Sunday 2 AM)
 0 2 * * 0 tar -czf /backups/full-$(date +\%Y-\%m-\%d).tar.gz /home/deploy/example.com --exclude=node_modules --exclude=vendor

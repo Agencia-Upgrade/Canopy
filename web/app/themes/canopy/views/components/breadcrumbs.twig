@@ -1,0 +1,15 @@
+{% if crumbs|length > 1 %}
+	<nav class="cnp-crumbs" aria-label="{{ __('Breadcrumb', 'canopy') }}">
+		<ol class="cnp-crumbs__list">
+			{% for crumb in crumbs %}
+				<li class="cnp-crumbs__item">
+					{% if crumb.url and not loop.last %}
+						<a class="cnp-crumbs__link" href="{{ crumb.url|e('esc_url') }}">{{ crumb.title }}</a>
+					{% else %}
+						<span class="cnp-crumbs__current" {% if loop.last %}aria-current="page"{% endif %}>{{ crumb.title }}</span>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ol>
+	</nav>
+{% endif %}

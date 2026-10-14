@@ -1,0 +1,32 @@
+<section class="cnp-hero">
+	{% embed 'components/reveal.twig' with { eager: true, class: 'cnp-hero__inner' } %}
+		{% block reveal %}
+			{% include 'components/brand.twig' with { modifier: 'hero', show_name: false } %}
+
+			{% if eyebrow %}
+				<p class="cnp-hero__eyebrow">{{ eyebrow }}</p>
+			{% endif %}
+
+			<h1 class="cnp-hero__title">{{ title }}</h1>
+
+			{% if subtitle %}
+				<p class="cnp-hero__subtitle">{{ subtitle }}</p>
+			{% endif %}
+
+			{% if lede %}
+				<p class="cnp-hero__lede">{{ lede }}</p>
+			{% endif %}
+
+			{% if points %}
+				<ul class="cnp-hero__points cnp-reveal" data-island="reveal" data-reveal-stagger>
+					{% for point in points %}
+						<li class="cnp-hero__point">
+							<h2 class="cnp-hero__point-title">{{ point.title }}</h2>
+							<p class="cnp-hero__point-text">{{ point.text }}</p>
+						</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		{% endblock %}
+	{% endembed %}
+</section>

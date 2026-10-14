@@ -98,12 +98,16 @@ Config::define('DB_COLLATE', '');
 $table_prefix = env('DB_PREFIX') ?: 'wp_';
 
 if (env('DATABASE_URL')) {
-    $dsn = (object) parse_url(env('DATABASE_URL'));
+    $parsed = parse_url(env('DATABASE_URL'));
 
-    Config::define('DB_NAME', substr($dsn->path, 1));
-    Config::define('DB_USER', $dsn->user);
-    Config::define('DB_PASSWORD', isset($dsn->pass) ? $dsn->pass : null);
-    Config::define('DB_HOST', isset($dsn->port) ? "{$dsn->host}:{$dsn->port}" : $dsn->host);
+    if (!is_array($parsed) || empty($parsed['host']) || strlen($parsed['path'] ?? '') < 2) {
+        throw new RuntimeException('DATABASE_URL is malformed. Expected mysql://user:pass@host[:port]/dbname.');
+    }
+
+    Config::define('DB_NAME', rawurldecode(substr($parsed['path'], 1)));
+    Config::define('DB_USER', isset($parsed['user']) ? rawurldecode($parsed['user']) : null);
+    Config::define('DB_PASSWORD', isset($parsed['pass']) ? rawurldecode($parsed['pass']) : null);
+    Config::define('DB_HOST', isset($parsed['port']) ? "{$parsed['host']}:{$parsed['port']}" : $parsed['host']);
 }
 
 /**

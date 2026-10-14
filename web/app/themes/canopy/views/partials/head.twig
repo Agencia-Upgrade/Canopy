@@ -1,9 +1,7 @@
-{# Head — meta tags and WordPress hooks. Assets are enqueued in Site.php. #}
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-{# Preconnect to jsDelivr — the reveal island imports Motion from there. #}
+{# jsDelivr — reveal island imports Motion from there. #}
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
+<script>document.documentElement.classList.add('js')</script>
 
 {{ function('wp_head') }}

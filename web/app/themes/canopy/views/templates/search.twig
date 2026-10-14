@@ -1,30 +1,24 @@
-{# Search Results #}
-
 {% extends "layouts/base.twig" %}
 
 {% block content %}
-	<div class="cnp-search">
-		<header class="cnp-search__header">
-			{# search_query is user input — escape it. #}
-			<h1 class="cnp-search__title">{{ __('Search results for', 'canopy') }} "{{ search_query|e }}"</h1>
-		</header>
+	{% if search_query %}
+		{% set title = __('Results for “%s”', 'canopy')|format(search_query|e) %}
+		{% set lede = __('Matches in titles and body copy.', 'canopy') %}
+		{% set empty = __('No match. Try a shorter word, or go home.', 'canopy') %}
+	{% else %}
+		{% set title = __('Search', 'canopy') %}
+		{% set lede = __('Find a page or post.', 'canopy') %}
+		{% set empty = __('Type a word. Results show a title, date, and short excerpt.', 'canopy') %}
+	{% endif %}
 
-		{% if posts %}
-			<div class="cnp-search__list">
-				{% for post in posts %}
-					<article class="cnp-search__item">
-						<h2 class="cnp-search__item-title">
-							<a href="{{ post.link }}">{{ post.title }}</a>
-						</h2>
-						<p class="cnp-search__item-excerpt">{{ post.excerpt }}</p>
-						<a href="{{ post.link }}" class="cnp-search__item-link">{{ __('Read more →', 'canopy') }}</a>
-					</article>
-				{% endfor %}
-			</div>
-
-			{% include 'partials/pagination.twig' %}
-		{% else %}
-			<p class="cnp-search__no-results">{{ __('No results found.', 'canopy') }}</p>
-		{% endif %}
-	</div>
+	{% include 'components/feed.twig' with {
+		title: title,
+		lede: lede,
+		empty: empty,
+		empty_link: site.url,
+		empty_label: __('Go to the homepage', 'canopy'),
+		show_search: true,
+		field_id: 'cnp-search-page',
+		found_posts: found_posts
+	} %}
 {% endblock %}

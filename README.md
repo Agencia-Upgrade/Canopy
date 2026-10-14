@@ -21,6 +21,7 @@
 - **Bedrock** — WordPress as a Composer dependency, cleaner folder structure
 - **Timber 2.x** — Twig templating for cleaner PHP/HTML separation
 - **Laravel Pint** — PSR-12 code formatting (PSR-4 namespacing)
+- **Stylelint** — lint-checkable modern-css rules on `main.css` (`npm run lint:css`)
 - **LiteSpeed Cache** — File-first cache configuration for production
 - **Zero Build Step** — CSS and JS committed directly; optional minification
 - **GitHub Actions** — Automated deployment and weekly dependency updates
@@ -65,7 +66,7 @@ DB_NAME=canopy_local
 DB_USER=dev
 DB_PASSWORD=dev
 DB_HOST=db
-WP_HOME=http://localhost
+WP_HOME=http://localhost:8080
 WP_ENV=development
 ```
 
@@ -80,7 +81,7 @@ Install WordPress:
 
 ```bash
 docker compose exec php wp --allow-root core install \
-  --url=http://localhost \
+  --url=http://localhost:8080 \
   --title="My Site" \
   --admin_user=admin \
   --admin_password=password \
@@ -108,7 +109,7 @@ make wp core version
 
 # WP-CLI (commands with flags — use docker compose exec directly)
 docker compose exec php wp --allow-root core install \
-  --url=http://localhost --title="My Site" \
+  --url=http://localhost:8080 --title="My Site" \
   --admin_user=admin --admin_password=password \
   --admin_email=admin@example.com
 
@@ -146,6 +147,9 @@ composer lint
 
 # Fix code style
 composer lint:fix
+
+# Check CSS (Stylelint, needs `npm install` first)
+npm run lint:css
 ```
 
 ## Structure
@@ -175,12 +179,16 @@ Canopy/
 │   │           │   └── images/
 │   │           └── cache/    # Twig cache (generated)
 ├── .docker/                   # Docker config (Dockerfile, nginx, php.ini)
-├── docker-compose.yml         # Local dev stack (nginx, php, mariadb, mailpit)
+├── docker-compose.yml         # Local dev stack (nginx, php, mariadb, redis, mailpit)
 ├── Makefile                   # Docker shortcuts (make setup, make up, make wp, etc.)
 ├── .env                       # Environment config (not versioned)
 ├── .env.example              # Environment template
 ├── composer.json
-├── CLAUDE.md                 # AI context
+├── package.json              # CSS lint deps only (Stylelint, no build)
+├── .stylelintrc.json         # Extends stylelint-config-modern
+├── AGENTS.md                 # Agent project rules
+├── CLAUDE.md                 # Points Claude Code at AGENTS.md + skill
+├── .agents/skills/           # canopy, modern-css, modern-web-guidance (versioned)
 └── .github/workflows/        # GitHub Actions
 ```
 
@@ -320,7 +328,8 @@ The theme uses `filemtime()` for cache-busting. Hard refresh with Ctrl+Shift+R /
 - [Bedrock Documentation](https://roots.io/bedrock/)
 - [Timber Documentation](https://timber.github.io/docs/v2/)
 - [Laravel Pint](https://laravel.com/docs/pint)
-- [CLAUDE.md](./CLAUDE.md) — AI-friendly context
+- [AGENTS.md](./AGENTS.md) — Agent project rules
+- [docs/KNOWN-ISSUES.md](./docs/KNOWN-ISSUES.md) — Known theme/doc issues
 
 ## License
 

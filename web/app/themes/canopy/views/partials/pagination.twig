@@ -1,16 +1,14 @@
-{# Pagination — renders Timber's posts.pagination object #}
-
 {% if posts.pagination.pages is not empty %}
-	<nav class="cnp-pagination" aria-label="Posts navigation">
+	<nav class="cnp-pagination" aria-label="{{ __('Posts navigation', 'canopy') }}">
 		{% if posts.pagination.prev %}
-			<a href="{{ posts.pagination.prev.link }}" class="cnp-pagination__prev" rel="prev">{{ __('← Previous', 'canopy') }}</a>
+			<a href="{{ posts.pagination.prev.link|e('esc_url') }}" class="cnp-pagination__link cnp-pagination__prev" rel="prev">{{ __('← Previous', 'canopy') }}</a>
 		{% endif %}
 
 		<ul class="cnp-pagination__list">
 			{% for page in posts.pagination.pages %}
 				<li class="cnp-pagination__item">
 					{% if page.link %}
-						<a href="{{ page.link }}" class="cnp-pagination__link {{ page.class }}">{{ page.title }}</a>
+						<a href="{{ page.link|e('esc_url') }}" class="cnp-pagination__link {{ page.class }}">{{ page.title }}</a>
 					{% else %}
 						<span class="cnp-pagination__link {{ page.class }}" aria-current="page">{{ page.title }}</span>
 					{% endif %}
@@ -19,7 +17,7 @@
 		</ul>
 
 		{% if posts.pagination.next %}
-			<a href="{{ posts.pagination.next.link }}" class="cnp-pagination__next" rel="next">{{ __('Next →', 'canopy') }}</a>
+			<a href="{{ posts.pagination.next.link|e('esc_url') }}" class="cnp-pagination__link cnp-pagination__next" rel="next">{{ __('Next →', 'canopy') }}</a>
 		{% endif %}
 	</nav>
 {% endif %}

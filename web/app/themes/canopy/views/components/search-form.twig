@@ -1,0 +1,12 @@
+<form class="cnp-search" role="search" method="get" action="{{ site.url|e('esc_url') }}">
+	<label class="sr-only" for="{{ field_id|default('cnp-search-field') }}">{{ __('Search', 'canopy') }}</label>
+	<input
+		id="{{ field_id|default('cnp-search-field') }}"
+		class="cnp-search__input"
+		type="search"
+		name="s"
+		value="{{ search_query|e }}"
+		placeholder="{{ placeholder|default(__('Search this site', 'canopy')) }}"
+	>
+	<button class="cnp-search__submit" type="submit">{{ __('Search', 'canopy') }}</button>
+</form>

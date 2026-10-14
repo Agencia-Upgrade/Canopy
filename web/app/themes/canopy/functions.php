@@ -1,13 +1,11 @@
 <?php
 
 /**
- * Functions — Canopy
- *
- * Theme developed by Agência Upgrade.
- *
- * @package    canopy
- * @author     Agência Upgrade <contato@agenciaupgrade.com.br>
- * @link       https://agenciaupgrade.com.br
+ * @package canopy
+ * @author  Agência Upgrade <contato@agenciaupgrade.com.br>
+ * @author  Gustavo Muniz (creator of Canopy, founder of Agência Upgrade) https://www.linkedin.com/in/gustavomunix/
+ * @link    https://agenciaupgrade.com.br
+ * @link    https://www.linkedin.com/company/agenciaupgrade
  */
 
 use Canopy\Site;

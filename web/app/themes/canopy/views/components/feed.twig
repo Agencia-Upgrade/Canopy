@@ -1,0 +1,35 @@
+<div class="cnp-feed">
+	{% include 'components/breadcrumbs.twig' %}
+
+	<header class="cnp-feed__header">
+		<h1 class="cnp-feed__title">{{ title }}</h1>
+		{% if lede %}
+			<p class="cnp-feed__lede">{{ lede }}</p>
+		{% endif %}
+	</header>
+
+	{% if show_search %}
+		{% include 'components/search-form.twig' with { field_id: field_id|default('cnp-search-feed') } %}
+	{% endif %}
+
+	{% if posts|length %}
+		{% if found_posts is defined %}
+			<p class="cnp-feed__count">{{ _n('%s result', '%s results', found_posts, 'canopy')|format(found_posts) }}</p>
+		{% endif %}
+
+		<div class="cnp-feed__list cnp-reveal" data-island="reveal" data-reveal-stagger>
+			{% for post in posts %}
+				{% include 'components/teaser.twig' %}
+			{% endfor %}
+		</div>
+
+		{% include 'partials/pagination.twig' %}
+	{% else %}
+		<div class="cnp-feed__empty">
+			<p>{{ empty|default(__('Nothing here yet.', 'canopy')) }}</p>
+			{% if empty_link and empty_label %}
+				<p><a href="{{ empty_link|e('esc_url') }}">{{ empty_label }}</a></p>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>

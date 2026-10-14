@@ -3,10 +3,11 @@
 /**
  * Template Name: Index
  *
- * The main template file. This is used when WordPress can't find a more specific template file.
+ * Fallback, and the posts page when a static front is set.
  *
- * @package    canopy
- * @author     Agência Upgrade <contato@agenciaupgrade.com.br>
+ * @package canopy
+ * @author  Agência Upgrade <contato@agenciaupgrade.com.br>
+ * @link    https://agenciaupgrade.com.br
  */
 
 use Timber\Timber;

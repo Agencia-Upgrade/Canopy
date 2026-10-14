@@ -3,10 +3,9 @@
 /**
  * Template Name: Single
  *
- * The template for displaying single posts.
- *
- * @package    canopy
- * @author     Agência Upgrade <contato@agenciaupgrade.com.br>
+ * @package canopy
+ * @author  Agência Upgrade <contato@agenciaupgrade.com.br>
+ * @link    https://agenciaupgrade.com.br
  */
 
 use Timber\Timber;
