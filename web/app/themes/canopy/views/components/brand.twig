@@ -1,4 +1,4 @@
-<a href="{{ site.url }}" class="cnp-brand{% if modifier %} cnp-brand--{{ modifier }}{% endif %}"{% if show_name is defined and not show_name %} aria-label="{{ site.name }}"{% endif %}>
+<a href="{{ site.url }}" class="cnp-brand{% if modifier %} cnp-brand--{{ modifier }}{% endif %}"{% if show_name is defined and not show_name %} aria-label="{{ site.name|e }}"{% endif %}>
 	<img class="cnp-brand__mark" src="{{ theme.link }}/assets/images/logo.svg" alt="" width="160" height="89">
 	{% if show_name is not defined or show_name %}
 		<span class="cnp-brand__name">{{ site.name }}</span>
