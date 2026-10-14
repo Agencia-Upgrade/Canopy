@@ -19,8 +19,8 @@ theme (`style.css` 2.0.0). Fixed items are gone.
   `ssl`. `Site::configureSMTP()` defaults to `587` / `tls` when those env
   vars are unset.
 
-- **`filemtime()` without existence checks** in `enqueueAssets()` — still
-  true. A missing `main.css` or `site.js` becomes a PHP warning.
+- **`filemtime()` without existence checks** in `enqueueAssets()` — fixed.
+  Guarded by `file_exists()` with `null` fallback.
 
 ## Docs (still reproduces)
 

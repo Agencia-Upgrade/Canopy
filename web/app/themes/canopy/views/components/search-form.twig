@@ -1,4 +1,4 @@
-<form class="cnp-search" role="search" method="get" action="{{ site.url }}">
+<form class="cnp-search" role="search" method="get" action="{{ site.url|e('esc_url') }}">
 	<label class="sr-only" for="{{ field_id|default('cnp-search-field') }}">{{ __('Search', 'canopy') }}</label>
 	<input
 		id="{{ field_id|default('cnp-search-field') }}"

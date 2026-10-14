@@ -438,7 +438,11 @@ class Site extends TimberSite
             $options['auto_reload'] = true;
         } else {
             $cacheDir = get_template_directory() . '/cache/twig';
-            wp_mkdir_p($cacheDir);
+
+            if (!is_dir($cacheDir)) {
+                wp_mkdir_p($cacheDir);
+            }
+
             $options['cache'] = $cacheDir;
         }
 
@@ -474,7 +478,7 @@ class Site extends TimberSite
     {
         $host = parse_url(home_url(), PHP_URL_HOST);
 
-        return getenv('SMTP_FROM') ?: "noreply@{$host}";
+        return getenv('SMTP_FROM') ?: 'noreply@' . (is_string($host) && $host !== '' ? $host : 'localhost');
     }
 
     public function mailFromName(): string
