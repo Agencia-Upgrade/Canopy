@@ -21,7 +21,7 @@
   video,
   canvas,
   svg {
-    display: block;
+    display: block flow;
     max-inline-size: 100%;
     block-size: auto;
   }
@@ -171,7 +171,7 @@
     }
 
     .cnp-header__inner {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       align-items: center;
       gap: var(--cnp-space-m);
@@ -184,7 +184,7 @@
     }
 
     .cnp-nav__list {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       gap: var(--cnp-space-l);
     }
@@ -217,14 +217,14 @@
     }
 
     .cnp-nav__item--parent:is(:hover, :focus-within) .cnp-nav__sub {
-      display: grid;
+      display: block grid;
       gap: var(--cnp-space-s);
     }
   }
 
   @scope (.cnp-brand) {
     :scope {
-      display: flex;
+      display: block flex;
       align-items: center;
       gap: var(--cnp-space-s);
       font-weight: 700;
@@ -310,7 +310,7 @@
     }
 
     .cnp-hero__points {
-      display: grid;
+      display: block grid;
       gap: var(--cnp-space-l);
       margin-block-start: var(--cnp-space-xl);
       text-align: start;
@@ -342,7 +342,7 @@
     }
 
     .cnp-crumbs__list {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       gap: var(--cnp-space-xs);
     }
@@ -376,7 +376,7 @@
     }
 
     .cnp-faq__list {
-      display: grid;
+      display: block grid;
       gap: var(--cnp-space-l);
       max-inline-size: var(--cnp-measure);
       margin-inline: auto;
@@ -394,7 +394,7 @@
 
   @scope (.cnp-search) {
     :scope {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       gap: var(--cnp-space-s);
       margin-block-end: var(--cnp-space-l);
@@ -471,7 +471,7 @@
     }
 
     .cnp-post__byline {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       gap: var(--cnp-space-s);
       color: var(--cnp-color-muted);
@@ -479,7 +479,7 @@
     }
 
     .cnp-post__terms {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       gap: var(--cnp-space-s);
       margin-block-start: var(--cnp-space-s);
@@ -516,7 +516,7 @@
     }
 
     .cnp-feed__list {
-      display: grid;
+      display: block grid;
       gap: var(--cnp-space-l);
     }
 
@@ -536,7 +536,7 @@
 
   @scope (.cnp-teaser) {
     :scope {
-      display: grid;
+      display: block grid;
       gap: var(--cnp-space-m);
 
       &:not(:first-child) {
@@ -566,7 +566,7 @@
     }
 
     .cnp-teaser__date {
-      display: block;
+      display: block flow;
       margin-block-end: var(--cnp-space-xs);
       color: var(--cnp-color-muted);
       font-size: var(--cnp-font-sm);
@@ -584,7 +584,7 @@
 
   @scope (.cnp-pagination) {
     :scope {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
@@ -593,14 +593,14 @@
     }
 
     .cnp-pagination__list {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       align-items: center;
       gap: var(--cnp-space-xs);
     }
 
     .cnp-pagination__link {
-      display: inline-block;
+      display: inline flow-root;
       padding-block: var(--cnp-space-s);
       padding-inline: var(--cnp-space-m);
       border: 1px solid var(--cnp-color-border);
@@ -647,7 +647,7 @@
     }
 
     .cnp-error-404__link {
-      display: inline-block;
+      display: inline flow-root;
       padding-block: var(--cnp-space-s);
       padding-inline: var(--cnp-space-l);
       background-color: var(--cnp-color-accent);
@@ -675,7 +675,7 @@
     }
 
     .cnp-footer__inner {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       align-items: end;
       justify-content: space-between;
@@ -685,7 +685,7 @@
     }
 
     .cnp-footer__brand {
-      display: grid;
+      display: block grid;
       gap: var(--cnp-space-s);
 
       > :not(:first-child) {
@@ -709,7 +709,7 @@
     }
 
     .cnp-footer__list {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       gap: var(--cnp-space-l);
     }
