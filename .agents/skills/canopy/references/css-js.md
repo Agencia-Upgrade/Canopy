@@ -1,7 +1,8 @@
 # CSS and JavaScript
 
-This file is the full convention set. Do not assume any other skill is
-installed. Token values live in `assets/styles/main.css`. Human map:
+This file holds the Canopy-specific conventions. General CSS rules come from
+the versioned `modern-css` skill (`.agents/skills/modern-css`); this file wins
+where they differ. Token values live in `assets/styles/main.css`. Human map:
 `docs/CSS-PATTERNS.md` (may be removed later).
 
 ## Contents

@@ -15,8 +15,59 @@ Human docs: `docs/` (`TIMBER.md`, `CSS-PATTERNS.md`, `JAVASCRIPT.md`,
 `DEPLOYMENT.md`). Known issues: `docs/KNOWN-ISSUES.md`. When a doc snippet
 disagrees with the theme, follow the theme.
 
-This skill is self-contained and versioned in git (`.agents/skills/canopy`).
-Do not require a skill that is not in this repository.
+Skills are versioned in git (`.agents/skills/canopy`, `modern-css`,
+`modern-web-guidance`). Do not require a skill that is not in this repository.
+
+## CSS rule: modern-css (required)
+
+Any CSS task (write, refactor, review, new component, base styles, tokens)
+must follow the `modern-css` skill. It is a rule, not a suggestion.
+
+Skills (versioned in git, symlinked into `.claude/skills/`):
+
+- `.agents/skills/modern-css/SKILL.md`: opinionated rules (`@layer`,
+  `@scope`, nesting with `&`, range queries, logical properties, two-value
+  `display`, `cqi` spacing, `clamp()` with a `rem` term, `text-wrap`,
+  `oklch()`, `light-dark()`, relative colors, `prefers-reduced-motion:
+  no-preference`).
+- `.agents/skills/modern-web-guidance/SKILL.md`: required dependency of
+  `modern-css`. Search and retrieve guides with
+  `npx -y modern-web-guidance@latest search "<query>"` and `retrieve "<id>"`.
+
+Order for a CSS task:
+
+1. Read `.agents/skills/canopy/references/css-js.md` (Canopy tokens, layers,
+   BEM `cnp-`, scope order).
+2. Read `.agents/skills/modern-css/SKILL.md` and apply every rule that fits.
+3. Retrieve `modern-web-guidance` guides when needed. Skip their fallbacks:
+   Baseline Newly Available features are used natively.
+4. Run `npm run lint:css`. Fix every error before finishing.
+
+Precedence: `css-js.md` wins for Canopy specifics (single file, tokens, BEM
+`cnp-` names, layer order, `@scope` limits only on user HTML). For anything
+else, `modern-css` wins over `modern-web-guidance`.
+
+Lint dependency (Node, dev only; still no build step):
+
+```bash
+npm install            # stylelint + stylelint-config-modern
+npm run lint:css       # check assets/styles/**/*.css
+npm run lint:css:fix   # auto-fix what Stylelint can
+```
+
+Config: `.stylelintrc.json` extends `stylelint-config-modern`. Do not
+disable rules or add `stylelint-disable` comments to pass the lint. CSS that
+fails `npm run lint:css` is not done.
+
+Restore or update the skills:
+
+```bash
+npx skills add moderncss/skills -y -a claude-code
+npx skills add GoogleChrome/modern-web-guidance -s modern-web-guidance -y -a claude-code
+```
+
+The CLI copies into `.claude/skills/`. Move the folder to `.agents/skills/`
+and symlink it back (`../../.agents/skills/<name>`), as the other skills do.
 
 ## Do not break
 
@@ -39,6 +90,8 @@ make composer install
 composer lint
 composer lint:fix
 composer phpstan
+npm install         # first time: CSS lint deps
+npm run lint:css
 ```
 
 WP-CLI with flags: `docker compose exec php wp --allow-root …` or
@@ -52,8 +105,9 @@ at `http://localhost:8080/wp/wp-admin`.
 - Text domain: `canopy`.
 - CSS: follow `.agents/skills/canopy/references/css-js.md` as the rule
   (`@layer`, `@scope`, `oklch`, `light-dark`, logical properties, `clamp` +
-  `cqi`, `@container`, motion via `prefers-reduced-motion: no-preference`).
-  BEM `cnp-`. One file, no build.
+  `cqi`, `@container`, motion via `prefers-reduced-motion: no-preference`)
+  plus the `modern-css` skill (see "CSS rule: modern-css"). BEM `cnp-`. One
+  file, no build. `npm run lint:css` must pass.
 - JS: vanilla islands, `data-island`, Motion inside the island, no GSAP,
   no jQuery, no build.
 - No new code comments unless asked.
