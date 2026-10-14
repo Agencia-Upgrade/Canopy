@@ -19,8 +19,11 @@ theme (`style.css` 2.0.0). Fixed items are gone.
   `ssl`. `Site::configureSMTP()` defaults to `587` / `tls` when those env
   vars are unset.
 
-- **`filemtime()` without existence checks** in `enqueueAssets()` — fixed.
-  Guarded by `file_exists()` with `null` fallback.
+- **Local mail goes nowhere.** `.docker/php/php.ini` sets
+  `sendmail_path = "mailpit sendmail -t"`, but the php image has no `mailpit`
+  binary. With `SMTP_HOST` empty (the `.env.example` default), `wp_mail()`
+  fails. Workaround for local dev: `SMTP_HOST=mailpit`, `SMTP_PORT=1025`,
+  `SMTP_ENCRYPTION=none`.
 
 ## Docs (still reproduces)
 
@@ -36,6 +39,8 @@ theme (`style.css` 2.0.0). Fixed items are gone.
 
 ## Fixed (do not re-open)
 
+- `filemtime()` in `enqueueAssets()` — guarded by `file_exists()` with a
+  `null` fallback.
 - `html lang` — `base.twig` now uses `{{ function('language_attributes') }}`.
 - Listing classes — `.cnp-archive` / `.cnp-search` are gone; use `.cnp-feed`
   / `.cnp-teaser`.

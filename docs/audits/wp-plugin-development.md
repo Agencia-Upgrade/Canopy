@@ -22,7 +22,7 @@ within theme scope.
 - One trivial safe fix. No plugin scaffolding, no refactors.
 
 Out of scope: block development, patterns, Timber API detail, CSS/JS.
-Those belong to their own audit workers and are listed as deferred below.
+Those belong to their own audits and are listed as deferred below.
 
 ## Method
 
@@ -30,7 +30,7 @@ Those belong to their own audit workers and are listed as deferred below.
    `references/structure.md`, `lifecycle.md`, `security.md`, and the
    `canopy` skill plus `AGENTS.md`.
 2. Queried `code-review-graph` first (`get_architecture_overview_tool`,
-   `get_hub_nodes_tool`): graph is empty for this worktree (0 communities,
+   `get_hub_nodes_tool`): graph is empty for this repository (0 communities,
    0 hubs — Twig/PHP not yet indexed here). Treated as "not indexed", not
    as evidence, and verified every claim below in source.
 3. Verified manually: `functions.php`, `src/Site.php` (all 505 lines),
@@ -41,14 +41,14 @@ Those belong to their own audit workers and are listed as deferred below.
    `archive_title`) and the `robots_txt` hook signature upstream.
 4. Fix verified with `php -l`, `composer lint` (Pint passed), and
    `vendor/bin/phpstan analyse --memory-limit=2G` (`[OK] No errors`;
-   the stock 512M limit OOMs on this machine regardless of code).
+   the stock 512M limit OOMs in the audit environment regardless of code).
 
 ## Findings
 
 | # | Location | Severity | Issue | Action |
 |---|---|---|---|---|
 | 1 | `web/app/themes/canopy/src/Site.php:454-458` (was `:454-461`) | High | `updateRobotsTxt()` mistook the `robots_txt` 2nd arg for a hostname (`string $host`). Upstream signature is `apply_filters('robots_txt', string $output, bool $public)` — the 2nd arg is blog-public status, so `$host` coerced to `"1"`/`""` and the Sitemap line rendered as `Sitemap: {scheme}://1…` (or `://…`): broken host on every live site, and the localhost/`.test`/`.local` guard never matched. Prior audits tracked only the product question (sitemap advertised while native sitemaps off); the signature bug itself was missed. | Taken. Host now derived from `parse_url(home_url())`; 2nd param renamed `mixed $public` (WP passes `blog_public` option value, not strict bool). Pint + PHPStan clean. The remaining product question (advertise `/sitemap.xml` at all) stays deferred in `docs/KNOWN-ISSUES.md`. |
-| 2 | `views/components/breadcrumbs.twig:7,9`, `feed.twig:5`, `teaser.twig:3,10,15-17`, `single.twig:8,12,19,27`, `pagination.twig:4,11,20` | Low | With Timber Twig autoescape off, `crumb.url/title`, `archive_title`, `post.title/link`, `term.name/link`, pagination links render without `\|e`. All values are WP-sanitized or internal (`home_url`, `get_permalink`, `get_the_title`, Timber object fields) — same posture as core bundled themes, which do not escape `the_title()` either. | Deferred. Explicit `\|e` would be defense-in-depth but risks double-escaping filtered titles and touches every listing template; needs its own Twig-escaping worker with rendered-output checks. No change. |
+| 2 | `views/components/breadcrumbs.twig:7,9`, `feed.twig:5`, `teaser.twig:3,10,15-17`, `single.twig:8,12,19,27`, `pagination.twig:4,11,20` | Low | With Timber Twig autoescape off, `crumb.url/title`, `archive_title`, `post.title/link`, `term.name/link`, pagination links render without `\|e`. All values are WP-sanitized or internal (`home_url`, `get_permalink`, `get_the_title`, Timber object fields) — same posture as core bundled themes, which do not escape `the_title()` either. | Deferred. Explicit `\|e` would be defense-in-depth but risks double-escaping filtered titles and touches every listing template; needs its own Twig-escaping pass with rendered-output checks. No change. |
 | 3 | `src/Site.php:68-74` (`registerPostTypes`, `registerTaxonomies`) | Info | Empty stubs. Correct for a starter: no CPT means no rewrite-flush obligation (the plugin-lifecycle analog). When a CPT lands, registration must stay on `init` ≤ 10 with a flush path (`wp rewrite flush` / `switch_theme`). | Deferred by design. No change. |
 | 4 | `src/Site.php:161-163` (`customizeRegister`) | Info | Empty stub; theme reads options via the `get_theme_mod` Twig passthrough. Settings API (`register_setting`, sanitize callbacks) is N/A — themes have no options-page surface here. | Deferred by design. No change. |
 | 5 | `src/Site.php:38` + `:454` | Info | Sitemap line advertised while `wp_sitemaps_enabled` returns false (URL 404s without an SEO plugin). Product decision, already in `docs/KNOWN-ISSUES.md` and two prior audits. Finding 1 above fixed the hostname; this row is only the whether-to-advertise question. | Deferred (product decision). No change. |

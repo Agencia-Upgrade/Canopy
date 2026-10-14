@@ -27,7 +27,7 @@ Audit of the Canopy theme's REST surface for Abilities API readiness
    `AGENTS.md`.
 2. Queried `code-review-graph` first (`semantic_search_nodes_tool` for
    `register_rest_route rest_controller` and `WP_REST_Request
-   permission_callback`). Graph is empty/unindexed in this worktree, so
+   permission_callback`). Graph is empty/unindexed in this repository, so
    both 0-result responses prove nothing; fell back to deterministic
    source checks per `controller-enumeration.md` (grep path).
 3. Verified in source with `grep` over `web/app/themes/canopy/`, plus
@@ -60,10 +60,10 @@ zero abilities:
 
 ```yaml
 plugin: canopy-theme  # theme, not a plugin; no slug to register under
-repo: Canopy  # starter theme worktree; no Owner/Repository remote for abilities scope
+repo: Canopy  # starter theme repository; no Owner/Repository remote for abilities scope
 branch_audited: audit/v2-wp-abilities-audit
 audited_at: 2026-10-14
-auditor: opencode audit worker (canopy-audit worktree)
+auditor: wp-abilities-audit skill
 baseline_abilities: 0
 capability_gate: null  # no controllers, no gate to trace
 proposed_abilities: []  # intentionally empty: zero backing endpoints

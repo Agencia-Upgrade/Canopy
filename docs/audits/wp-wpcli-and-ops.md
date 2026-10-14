@@ -15,7 +15,7 @@ writes. Worktree branch: `audit/v2-wp-wpcli-and-ops`.
 - `code-review-graph`: `get_minimal_context_tool` → `status: not_ready`
   (`missing_graph`). Ops surface is config/docs/shell, not indexed PHP/JS, so
   graph has low signal here by design; verified in source instead.
-- Grep worktree for `register_post_type|register_taxonomy|cron|transient|
+- Grep repository for `register_post_type|register_taxonomy|cron|transient|
   wp_cache|rewrite.*flush|CACHE|REDIS|OBJECT_CACHE` and separately for
   `search-replace|search_replace|db export|db import|--dry-run|--allow-root`.
 - Grep `config/` for `MULTISITE|SUBDOMAIN|DOMAIN_CURRENT|WP_ALLOW_MULTISITE` →

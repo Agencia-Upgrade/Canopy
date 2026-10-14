@@ -2,7 +2,7 @@
 
 Date: 2026-10-14. Branch: `audit/v2-wpds`. Graph: 22 files, 44 nodes, 385 edges (PHP/JS only; CSS/Twig not indexed, checked by read-through). Source verified manually.
 
-Note: `.agents/skills/wpds/SKILL.md` requires the WPDS MCP server for canonical docs, but this worktree's `.mcp.json` registers only `code-review-graph`. Per the skill's own rule, no web search was used for canonical WPDS documentation. WPDS mapping below is therefore assessed from the theme source plus the canopy skill's `css-js.md` rule set, not from WPDS component docs.
+Note: `.agents/skills/wpds/SKILL.md` requires the WPDS MCP server for canonical docs, but this repository's `.mcp.json` registers only `code-review-graph`. Per the skill's own rule, no web search was used for canonical WPDS documentation. WPDS mapping below is therefore assessed from the theme source plus the canopy skill's `css-js.md` rule set, not from WPDS component docs.
 
 ## 1. Scope and method
 

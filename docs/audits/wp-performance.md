@@ -7,11 +7,11 @@ Backend perf posture of Canopy theme (`web/app/themes/canopy`) + Bedrock config 
 ## Method
 
 - Read `.agents/skills/wp-performance/SKILL.md` (+ refs `database`, `object-cache`, `autoload-options`, `cron`, `http-api`) and canopy skill + `AGENTS.md` (+ refs `architecture`, `timber-twig`, `php`).
-- `code-review-graph`: `get_architecture_overview_tool` → 0 communities, 0 edges; `list_graph_stats_tool` → 0 files/nodes, never built for this worktree. No graph nodes to trace; proceeded with source greps.
+- `code-review-graph`: `get_architecture_overview_tool` → 0 communities, 0 edges; `list_graph_stats_tool` → 0 files/nodes, never built for this repository. No graph nodes to trace; proceeded with source greps.
 - Grep theme for `get_posts|WP_Query|query_posts|filemtime|wp_enqueue|update_option|set_transient|wp_remote|wp_schedule|cron|autoload|pre_get_posts|posts_per_page|no_found_rows|update_post_meta_cache|fields.*ids` → only enqueue/filemtime hits in `Site.php` + `found_posts` read in `search.php`.
 - Grep `web/app` for `object-cache.php|add_option|set_transient|wp_remote_get|wp_schedule|pre_get_posts` → zero matches.
 - Grep `config` for cache/cron/debug constants; read `Site.php` (full), all 7 hierarchy PHP files, `feed/teaser/single/pagination` Twig, `composer.json`, `web/wp-config.php`.
-- No live `wp doctor`/`wp profile`/Query Monitor: no running install in this worktree.
+- No live `wp doctor`/`wp profile`/Query Monitor: no running install in this repository.
 
 ## Findings
 

@@ -8,7 +8,7 @@ REST surface of Canopy theme (`web/app/themes/canopy`): custom routes, controlle
 
 - Read `.agents/skills/wp-rest-api/SKILL.md` (+ refs index) and canopy skill + `AGENTS.md`.
 - `code-review-graph`: `get_architecture_overview_tool` → 0 communities, 0 edges. No REST nodes to trace.
-- Grep whole worktree for `register_rest_route|WP_REST_Controller|rest_api_init|show_in_rest|rest_base|rest_controller_class|register_rest_field|register_meta|WP_REST_Request|WP_REST_Response|permission_callback|rest_ensure_response` → only hits are doc/skill examples (`README.md:234`, `.agents/skills/canopy/references/php.md:68`, prior audit notes). No live code.
+- Grep whole repository for `register_rest_route|WP_REST_Controller|rest_api_init|show_in_rest|rest_base|rest_controller_class|register_rest_field|register_meta|WP_REST_Request|WP_REST_Response|permission_callback|rest_ensure_response` → only hits are doc/skill examples (`README.md:234`, `.agents/skills/canopy/references/php.md:68`, prior audit notes). No live code.
 - Grep `web/app/themes/canopy` for same set → zero matches.
 - Grep `web/app` for `register_post_type|register_taxonomy|register_rest` → zero matches.
 - Read `web/app/themes/canopy/src/Site.php:68-74`: `registerPostTypes()` and `registerTaxonomies()` are empty stubs. Nothing to expose via `show_in_rest`.

@@ -16,7 +16,7 @@ Audit of custom Gutenberg block posture for the Canopy boilerplate
   beyond this audit doc.
 
 Out of scope: block theme migration, editor styling, REST surface,
-docs rewrites. Those belong to their own audit workers.
+docs rewrites. Those belong to their own audits.
 
 ## Method
 
@@ -26,9 +26,9 @@ docs rewrites. Those belong to their own audit workers.
    `references/timber-twig.md`), and `AGENTS.md`.
 2. Queried `code-review-graph` first (`semantic_search_nodes_tool` for
    block registration + theme/Editor support). Graph is empty/unindexed
-   in this worktree, so the 0-result response proves nothing; fell back
+   in this repository, so the 0-result response proves nothing; fell back
    to deterministic source checks per the skill's triage procedure.
-3. Verified in source with `grep`/`glob` over the worktree and the theme:
+3. Verified in source with `grep`/`glob` over the repository and the theme:
    `**/block.json` (zero hits), `**/theme.json` (zero hits),
    `**/blocks/**` (zero hits), `register_block_type` (only mentions in
    prior audit docs, no code), plus a block-adjacent sweep
@@ -69,7 +69,7 @@ Applies to future blocks only (currently N/A — nothing to migrate):
 
 | # | Location | Severity | Issue | Action |
 |---|---|---|---|---|
-| 1 | `web/app/themes/canopy/src/Site.php:46-66` (`themeSupports`) | Info | No editor supports declared (`align-wide`, `editor-styles`, `responsive-embeds`). Core blocks using wide/full alignment or editor styles render without theme opt-in. | Deferred (product decision). Classic theme posture is deliberate; a future design worker opts in if the design needs it. No change. |
+| 1 | `web/app/themes/canopy/src/Site.php:46-66` (`themeSupports`) | Info | No editor supports declared (`align-wide`, `editor-styles`, `responsive-embeds`). Core blocks using wide/full alignment or editor styles render without theme opt-in. | Deferred (product decision). Classic theme posture is deliberate; a project opts in if the design needs it. No change. |
 | 2 | `web/app/themes/canopy/src/Site.php:99-106`, `147-159` | Info | `wp-block-library` enqueued only on `is_singular()`; dequeued (with `wp-block-library-theme`, `core-block-supports`, `global-styles`, `classic-theme-styles`) elsewhere. Non-singular views showing full post content (e.g. excerpts rendered as content) lose core-block styling. | Deferred (by design). Matches the canopy hard rule; shipped listings use `post.excerpt`, not content. No change. |
 
 ## Correctness notes (verified, no issue)
@@ -89,7 +89,7 @@ Applies to future blocks only (currently N/A — nothing to migrate):
 ## Verification
 
 - `glob **/block.json`, `**/theme.json`, `**/blocks/**`: zero hits.
-- `grep register_block_type` (worktree-wide): no code hits.
+- `grep register_block_type` (repo-wide): no code hits.
 - Block-adjacent sweep (see Method §3): no code hits.
 - No source files changed, so `composer lint` / `composer phpstan`
   are unaffected; nothing to run for a docs-only change

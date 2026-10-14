@@ -40,7 +40,7 @@ runtime. Those are deferred below.
    hosts, `wp_remote_*`, `eval`/`base64`, license gates, credit links,
    admin notices, iframes, and `.min.js`/jQuery copies.
 4. Plugin Check (PCP) **not run**: Canopy is not a plugin and no local
-   WP runtime was provisioned in this worker. Not run is not a pass.
+   WP runtime was provisioned for this audit. Not run is not a pass.
 
 ## Findings
 
@@ -72,6 +72,6 @@ None. Headers and license text already correct; the single flag
 ## Deferred / follow-ups
 
 - Vendor Motion locally (or keep CDN deliberately) — needs its own
-  worker: download pin, SRI/integrity, island fallback, docs update.
+  change: download pin, SRI/integrity, island fallback, docs update.
 - Any future `.org` theme submission would need a fresh full-guideline
   pass plus Theme Check, not this by-analogy audit.

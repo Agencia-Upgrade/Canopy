@@ -2,7 +2,7 @@
 
 Date: 2026-10-14. Branch: `audit/v2-wordpress-router`. Graph: 22 files, 44 nodes, 383 edges (PHP/JS only; Twig/config not indexed). Source verified manually.
 
-Note: `.agents/skills/wordpress-router/SKILL.md` does not exist in this worktree. Classification and routing below use `AGENTS.md` plus `.agents/skills/canopy/` (SKILL.md load index, `architecture.md`, `timber-twig.md`, `php.md`, `gotchas.md`) as source of truth.
+Note: `.agents/skills/wordpress-router/SKILL.md` does not exist in this repository. Classification and routing below use `AGENTS.md` plus `.agents/skills/canopy/` (SKILL.md load index, `architecture.md`, `timber-twig.md`, `php.md`, `gotchas.md`) as source of truth.
 
 ## 1. Classification
 
@@ -48,5 +48,5 @@ No Timber 1 API violations in shipped PHP/Twig (`new Timber\Post/Menu`, `Timber:
 ## 4. Verification
 
 - `composer lint` (pint --test): pass after fixes.
-- `composer phpstan` (level 5, theme scope): pass with `--memory-limit=2G`; default 512M OOMs in worker env (infra, not code).
+- `composer phpstan` (level 5, theme scope): pass with `--memory-limit=2G`; default 512M OOMs in the audit environment (infra, not code).
 - Twig/CSS/JS not statically analysed per `phpstan.neon`; `views/` checked by read-through only.

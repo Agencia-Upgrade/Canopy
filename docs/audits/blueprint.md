@@ -11,7 +11,7 @@ Audit of WordPress Playground Blueprint fit for the Canopy boilerplate
 - Only trivial safe additions. No refactors, no theme behavior changes.
 
 Out of scope: Playground runtime testing (no network/CLI here), detector fixes,
-theme fixes. Those belong to their own workers.
+theme fixes. Those belong to their own audits.
 
 ## Method
 

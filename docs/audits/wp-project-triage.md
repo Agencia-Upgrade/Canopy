@@ -11,7 +11,7 @@ boilerplate (Bedrock + Timber 2 + Twig 3). Branch: `audit/v2-wp-project-triage`.
 - Apply only trivial safe fixes inside triage scope. No refactors.
 
 Out of scope: theme behavior fixes, docs rewrites, detector rewrites. Those
-belong to their own audit workers and are listed as deferred below.
+belong to their own audits and are listed as deferred below.
 
 ## Method
 
@@ -56,9 +56,9 @@ Manual result: **Bedrock-based `wp-site` + classic Timber `wp-theme`**
 |---|---|---|---|---|
 | 1 | detector `detect_wp_project.mjs:294-297` (checks only `<root>/wp-content`) | Medium | False negative: reports `kind: ["unknown"]` on a Bedrock layout because the content dir is `web/app`, not `wp-content`. Same blind spot for drop-in/plugin scans (`wpCliHints` aside, all path signals null). | Deferred. Detector fix belongs upstream with the skill owner; the skill directory is not versioned on this branch (`.gitignore` keeps only `canopy`). Manual classification above stands in for the report. |
 | 2 | `web/app/themes/canopy/src/Site.php:38,451-461` | Low | Sitemap URL appended to `robots_txt` on live hosts while `wp_sitemaps_enabled` returns false. URL 404s unless an SEO plugin serves it. | Deferred (product decision). Already tracked in `docs/KNOWN-ISSUES.md`. No change. |
-| 3 | `web/app/themes/canopy/src/Site.php:86,93` | Low | `filemtime()` on `main.css` / `site.js` without existence check; a missing asset is a PHP warning. | Deferred. A `file_exists` guard is trivial but outside triage scope (theme behavior, needs its own worker + lint/phpstan run). Already tracked in `docs/KNOWN-ISSUES.md`. No change. |
+| 3 | `web/app/themes/canopy/src/Site.php:86,93` | Low | `filemtime()` on `main.css` / `site.js` without existence check; a missing asset is a PHP warning. | Deferred. A `file_exists` guard is trivial but outside triage scope (theme behavior, needs its own change + lint/phpstan run). Already tracked in `docs/KNOWN-ISSUES.md`. No change. |
 | 4 | `.env.example:73-74` vs `web/app/themes/canopy/src/Site.php:491-492` | Info | Example shows `465`/`ssl`; code fallback is `587`/`tls` when env vars are unset. | Deferred (docs/example alignment). Already tracked in `docs/KNOWN-ISSUES.md`. No change. |
-| 5 | `docs/TIMBER.md` vs theme | Info | Pagination example uses deprecated `Timber::get_pagination()` + `pagination` key (theme uses `posts.pagination`); related-posts example queries inside the loop; `{{ post.content }}` printed without `|raw`. Theme verified correct in all three cases. | Deferred to docs audit worker. No change. |
+| 5 | `docs/TIMBER.md` vs theme | Info | Pagination example uses deprecated `Timber::get_pagination()` + `pagination` key (theme uses `posts.pagination`); related-posts example queries inside the loop; `{{ post.content }}` printed without `|raw`. Theme verified correct in all three cases. | Deferred to a docs audit. No change. |
 | 6 | repo root | Info | No test harness of any kind. Consistent with a starter boilerplate, but means triage `tooling.tests` signals are all false and stay false. | Deferred (by design). No change. |
 
 ## Correctness notes (verified, no issue)

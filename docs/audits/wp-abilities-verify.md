@@ -6,7 +6,7 @@ Last updated: 2026-10-14 11:00
 
 ## Status: PASS (vacuous — nothing to verify)
 
-No Abilities API surface exists in this worktree. Zero hits for
+No Abilities API surface exists in this repository. Zero hits for
 `wp_register_ability(` across the repo (PHP-wide grep), zero
 `permission_callback` / `execute_callback` / `input_schema` hits in
 `web/app/themes/canopy/`, and the `code-review-graph` knowledge graph
@@ -27,7 +27,7 @@ as an adjacent machine-readable surface.
 
 No audit document was provided. Sibling check: no `wp-abilities-*` file
 exists in `docs/audits/` on this branch (expected — the sibling
-`wp-abilities-audit` worker output is absent from this worktree, so
+`wp-abilities-audit` output is absent from this repository, so
 there is nothing to cross-check or validate). Lint 6
 (`reference_ability` implies no required inputs) is skipped accordingly.
 

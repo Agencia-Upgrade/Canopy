@@ -1,11 +1,11 @@
 # wp-env audit — Canopy v2
 
-Date: 2026-10-14. Branch: `audit/v2-wp-env`. Docker unavailable in worker
+Date: 2026-10-14. Branch: `audit/v2-wp-env`. Docker unavailable in the audit
 (`docker info` fails); Node v26.11.1. No containers started — every claim
 below is verified in source (compose, Dockerfile, nginx conf, php.ini,
 Makefile, `.env.example`, `config/`, `README.md`).
 
-Note: `.agents/skills/wp-env/SKILL.md` is not versioned in this worktree
+Note: `.agents/skills/wp-env/SKILL.md` is not versioned in this repository
 (gitignored, only `canopy` is kept); the skill text was provided for this
 audit. No `references/` directory ships with it, so there was no detector
 script to run. Classification below is manual.
