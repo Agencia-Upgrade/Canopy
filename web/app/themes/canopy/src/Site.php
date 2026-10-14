@@ -449,11 +449,12 @@ class Site extends TimberSite
      * Appends Sitemap on live hosts only (skips localhost, .test, .local).
      *
      * @param string $output
-     * @param string $host
+     * @param mixed $public
      */
-    public function updateRobotsTxt(string $output, string $host): string
+    public function updateRobotsTxt(string $output, mixed $public): string
     {
         $home = parse_url(home_url());
+        $host = is_array($home) && isset($home['host']) ? (string) $home['host'] : '';
         $path = !empty($home['path']) ? $home['path'] : '';
 
         if ('localhost' !== $host && strpos($host, '.test') === false && strpos($host, '.local') === false) {
